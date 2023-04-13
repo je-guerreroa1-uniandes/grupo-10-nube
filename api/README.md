@@ -5,8 +5,11 @@
 # Crear el entorno la primera vez
 python3 -m venv .venv
 
-# Activar el entorno
+# Activar el entorno linux
 source .venv/bin/activate
+# Activar el entorno virtual windows
+.venv/Scripts/activate
+
 
 # Trabajar (requiere: Activar el entorno)
 # Instala las dependencias en el entorno
