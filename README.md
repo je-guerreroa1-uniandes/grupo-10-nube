@@ -1,2 +1,2 @@
 # grupo-10-nube
-Desarrollo en la nube
+Desarrollo de software en la nube
