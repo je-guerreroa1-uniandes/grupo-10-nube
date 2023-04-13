@@ -28,4 +28,4 @@ jobs:
         with:
           context: api
           push: true
-          tags: ${{ github.repository_owner }}/api:latest
+          tags: ${{ github.repository }}:latest
