@@ -1,6 +1,8 @@
 {
     "recommendations": [
         "PKief.material-icon-theme",
+        "hashicorp.terraform",
+        "hashicorp.hcl"   
     ]
 }
   
