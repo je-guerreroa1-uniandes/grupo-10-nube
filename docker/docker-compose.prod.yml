@@ -1,0 +1,37 @@
+version: '3.1'
+
+services:
+
+  api:
+    image: ghcr.io/je-guerreroa1-uniandes/grupo-10-nube/api:latest
+    ports:
+      - '5000:5000'
+    volumes:
+      - uploads-volume:/app/uploads
+
+  jobs:
+    image: ghcr.io/je-guerreroa1-uniandes/grupo-10-nube/jobs:latest
+    volumes:
+      - uploads-volume:/app/uploads
+
+  custom-redis:
+    image: ghcr.io/je-guerreroa1-uniandes/grupo-10-nube/custom-redis:latest
+    ports:
+      - '6379:6379'
+    volumes:
+      - redis-data:/data
+
+  redis-commander:
+    image: ghcr.io/joeferner/redis-commander:latest
+    restart: always
+    environment:
+      - REDIS_HOSTS=local:redis:6379:0:lOGleSPirDOLEYsiceWlemPtO
+    ports:
+      - '8082:8081'
+    depends_on:
+      - 'redis'
+
+volumes:
+
+  uploads-volume:
+  redis-data:
