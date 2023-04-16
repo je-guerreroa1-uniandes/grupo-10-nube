@@ -7,6 +7,14 @@ from flask import request
 from flask import send_from_directory
 from flask_restful import Resource
 from werkzeug.utils import secure_filename
+# Celery for message broking
+from datetime import datetime
+from celery import Celery
+
+celery_app = Celery(__name__, broker='redis://localhost:6379/0')
+@celery_app.task(name='proccess_file')
+def proccess_file(*args):
+    pass
 
 def allowed_file(filename):
     ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
@@ -68,12 +76,12 @@ class VistaCreateTasks(Resource):
         filename = file.filename
         extension = filenameParts[-1]
         response_string = f'Filename: {filename}, extension: {extension}'
-        # with zipfile.ZipFile("./processed/data.zip", "a") as zip:
-        #     zip.write("vinyl.png ", arcname="./app.py")
-        # with zipfile.ZipFile("./processed/data.zip", "a") as zip:
-        #     # Add the uploaded file to the archive
-        #     zip.write(os.path.join(UPLOAD_FOLDER, filename), arcname=filename)
 
+        # Call to message broker for queue the file
+        args = (filename, destination_format, datetime.utcnow())
+        proccess_file.apply_async(args=args, queue='files')
+
+        # TODO: Remove conversion step from here
         if destination_format in formats.keys():
             print(f"calling {destination_format}")
             func = formats[destination_format]
