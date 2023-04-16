@@ -1,22 +1,10 @@
 from flask import request
 from flask_jwt_extended import jwt_required, create_access_token, get_jwt_identity
 from flask_restful import Resource
-# from sqlalchemy.exc import IntegrityError
-# from sqlalchemy import and_
-# from datetime import datetime
-# import hashlib
 
 from ..modelos import db, Usuario, UsuarioSchema
 
 usuario_schema = UsuarioSchema()  # Instanciar esquema creado
-
-
-# class Usuario(db.Model):
-#   id = db.Column(db.Integer, primary_key=True)
-#     username = db.Column(db.String(50))
-#     password = db.Column(db.String(50))
-#     email = db.Column(db.String(128))
-
 
 class VistaSignIn(Resource):
   def post(self):
@@ -24,7 +12,7 @@ class VistaSignIn(Resource):
                             password=request.json['password'],
                             email=request.json['email'])
 
-    # token_de_acceso = create_access_token(identity=request.json['nombre'])
+    # token_de_acceso = create_access_token(identity=request.json['username'])
 
     db.session.add(nuevo_usuario)
     db.session.commit()
