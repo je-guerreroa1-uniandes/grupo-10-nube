@@ -33,12 +33,10 @@ class VistaSignIn(Resource):
                             password=request.json['password'],
                             email=request.json['email'])
 
-    token_de_acceso = create_access_token(identity=request.json['username'])
-
     db.session.add(nuevo_usuario)
     db.session.commit()
 
-    return {'mensaje': 'usuario creado exitosamente', 'token_de_acceso': token_de_acceso}
+    return {'mensaje': 'usuario creado exitosamente', 'id': nuevo_usuario.id}
 
 
   @jwt_required()
@@ -68,15 +66,20 @@ class VistaUpdateSignIn(Resource):
     db.session.commit()
     return 'Usuario eliminado exitosamente', 204
 
-
-
-
 class VistaLogIn(Resource):
   def post(self):
     u_username = request.json['username']
     u_password = request.json['password']
-    usuario = Usuario.query.filter_by(username=u_username, password = u_password).all()
+    usuario = Usuario.query.filter_by(username=u_username, password = u_password).first()
     if usuario:
-      return {'mensaje':'Inicio de sesión exitoso'}, 200
+      objeto_usuario = usuario_schema.dump(usuario)
+      del objeto_usuario['password']
+      token_de_acceso = create_access_token(identity=objeto_usuario)
+      return {'mensaje':'Inicio de sesión exitoso', "token": token_de_acceso}, 200
     else:
       return {'mensaje':'Nombre de usuario o contraseña incorrectos'}, 401
+
+class VistaFile(Resource):
+    def get(self, name):
+        UPLOAD_FOLDER = './uploads'
+        return send_from_directory(UPLOAD_FOLDER, name)

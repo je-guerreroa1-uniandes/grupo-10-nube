@@ -1,7 +1,7 @@
 from flask import Flask
 
 # from .modelos import db, PuntoVenta
-from vistas import VistaHealthCheck, VistaSignIn, VistaLogIn, VistaCreateTasks, VistaFile
+from vistas import VistaHealthCheck, VistaSignIn, VistaUpdateSignIn, VistaLogIn, VistaCreateTasks, VistaFile
 from flask_restful import Api
 
 from flask import request
