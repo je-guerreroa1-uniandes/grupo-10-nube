@@ -7,17 +7,7 @@ from werkzeug.utils import secure_filename
 from datetime import datetime
 from celery import Celery
 
-import configparser
-
-# config = configparser.ConfigParser()
-# # config_path = os.path.abspath(os.path.join(os.path.dirname(__file__), 'config.ini'))
-# config_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'config.ini'))
-# print(config_path)
-# print(config.items())
-# # REDIS_DATABASE_URI = config.get('redis', 'REDIS_DATABASE_URI')
-
 celery_app = Celery(__name__, broker='redis://:lOGleSPirDOLEYsiceWlemPtO@10.130.13.4:6379/0')
-# celery_app = Celery(__name__, broker=app.config["REDIS_DATABASE_URI"])
 @celery_app.task(name='proccess_file')
 def proccess_file(*args):
     pass
