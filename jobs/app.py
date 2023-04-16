@@ -3,7 +3,7 @@ import tarfile
 import os
 from celery import Celery
 
-celery_app = Celery(__name__, broker='redis://localhost:6379/0')
+celery_app = Celery(__name__, broker='redis://:lOGleSPirDOLEYsiceWlemPtO@10.130.13.4:6379/0')
 
 def to_zip(file_path, destination_path):
     with zipfile.ZipFile(destination_path + '.zip', 'w') as zip_file:

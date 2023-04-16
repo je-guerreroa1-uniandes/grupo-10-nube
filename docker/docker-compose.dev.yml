@@ -7,12 +7,13 @@ services:
       context: ../api
       dockerfile: Dockerfile
     ports:
-      - '5000:5000'
+      - '3000:5000'
     networks:
       redproyecto:
         ipv4_address: 10.130.13.2
     volumes:
       - uploads-volume:/app/uploads
+      - processed-volume:/app/processed
 
   jobs:
     build:
@@ -23,6 +24,7 @@ services:
         ipv4_address: 10.130.13.3
     volumes:
       - uploads-volume:/app/uploads
+      - processed-volume:/app/processed
 
   custom-redis:
     build:
@@ -65,6 +67,7 @@ services:
 volumes:
 
   uploads-volume:
+  processed-volume:
   redis-data:
 
 networks:
