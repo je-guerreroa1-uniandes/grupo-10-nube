@@ -7,6 +7,10 @@ from ..modelos import db, Usuario, UsuarioSchema
 usuario_schema = UsuarioSchema()  # Instanciar esquema creado
 
 class VistaSignIn(Resource):
+
+  def get(self):
+     return [usuario_schema.dump(usuario) for usuario in Usuario.query.all()]
+
   def post(self):
     nuevo_usuario = Usuario(username=request.json['username'],
                             password=request.json['password'],
@@ -18,23 +22,38 @@ class VistaSignIn(Resource):
     db.session.commit()
     return 'Usuario creado exitosamente', 201
 
-    # return {'mensaje': 'usuario creado exitosamente', 'token_de_acceso': token_de_acceso}
+    # return {'mensaje': 'usuario creado exitosamente 123', 'token_de_acceso': token_de_acceso}
+
+
+
+class VistaUpdateSignIn(Resource):
+
+  def get(self, id_usuario):
+    return usuario_schema.dump(Usuario.query.get_or_404(id_usuario))
 
   def put(self, id_usuario):
     usuario = Usuario.query.get_or_404(id_usuario)
     usuario.username = request.json.get('username', usuario.username)
     usuario.password = request.json.get('password', usuario.password)
     usuario.email = request.json.get('email', usuario.email)
-    db.session.commit()
+    db.session.commit()  # Guarda cambios
     return usuario_schema.dump(usuario)
 
   def delete(self, id_usuario):
     usuario = Usuario.query.get_or_404(id_usuario)
     db.session.delete(usuario)
     db.session.commit()
-    return 'Operacion exitosa', 204
+    return 'Usuario eliminado exitosamente', 204
 
 
+
+
+
+  # Declarar decorador
+  # @jwt_required()
+  # def get(self, id_usuario):
+  #   usuario = Usuario.query.get_or_404(id_usuario)
+  #   return [usuario_schema.dump(al) for al in usuario.usuarios]
 
 # class VistaSignIn(Resource):
 
