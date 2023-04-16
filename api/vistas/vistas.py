@@ -20,7 +20,7 @@ import hashlib
 
 from modelos import db, Usuario, UsuarioSchema
 
-usuario_schema = UsuarioSchema()
+usuario_schema = UsuarioSchema()  # Instanciar esquema creado
 
 class VistaHealthCheck(Resource):
 
