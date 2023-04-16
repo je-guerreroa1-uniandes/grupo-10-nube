@@ -18,7 +18,7 @@ from werkzeug.utils import secure_filename
 # from datetime import datetime
 import hashlib
 
-from ..modelos import db, Usuario, UsuarioSchema
+from modelos import db, Usuario, UsuarioSchema
 
 usuario_schema = UsuarioSchema()  # Instanciar esquema creado
 

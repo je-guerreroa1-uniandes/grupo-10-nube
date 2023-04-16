@@ -5,10 +5,10 @@ from vistas import VistaHealthCheck, VistaSignIn, VistaLogIn, VistaCreateTasks, 
 from flask_restful import Api
 
 from flask import request
-from .modelos import db
+from modelos import db
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///conversion_tools.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://postgres:ckhAMLIteFlYheRptAteapeze@10.130.13.6:5432/convercion"
 app.config['SQLALCHEMY_TRACK_MODIFICATION'] = False
 app_context = app.app_context()  # Hacer push del contexto de la app
 app_context.push()
