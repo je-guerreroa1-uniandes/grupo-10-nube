@@ -1,36 +1,37 @@
 from flask import request
-from flask_jwt_extended import jwt_required, create_access_token, get_jwt_identity
 from flask_restful import Resource
+from flask_jwt_extended import jwt_required, create_access_token, get_jwt_identity
 
 from ..modelos import db, Usuario, UsuarioSchema
 
 usuario_schema = UsuarioSchema()  # Instanciar esquema creado
 
 class VistaSignIn(Resource):
-
-  def get(self):
-     return [usuario_schema.dump(usuario) for usuario in Usuario.query.all()]
-
   def post(self):
     nuevo_usuario = Usuario(username=request.json['username'],
                             password=request.json['password'],
                             email=request.json['email'])
 
-    # token_de_acceso = create_access_token(identity=request.json['username'])
+    token_de_acceso = create_access_token(identity=request.json['username'])
 
     db.session.add(nuevo_usuario)
     db.session.commit()
-    return 'Usuario creado exitosamente', 201
 
-    # return {'mensaje': 'usuario creado exitosamente 123', 'token_de_acceso': token_de_acceso}
+    return {'mensaje': 'usuario creado exitosamente', 'token_de_acceso': token_de_acceso}
+
+
+  @jwt_required()
+  def get(self):
+    return [usuario_schema.dump(usuario) for usuario in Usuario.query.all()]
 
 
 
 class VistaUpdateSignIn(Resource):
-
+  @jwt_required()
   def get(self, id_usuario):
     return usuario_schema.dump(Usuario.query.get_or_404(id_usuario))
 
+  @jwt_required()
   def put(self, id_usuario):
     usuario = Usuario.query.get_or_404(id_usuario)
     usuario.username = request.json.get('username', usuario.username)
@@ -39,6 +40,7 @@ class VistaUpdateSignIn(Resource):
     db.session.commit()  # Guarda cambios
     return usuario_schema.dump(usuario)
 
+  @jwt_required()
   def delete(self, id_usuario):
     usuario = Usuario.query.get_or_404(id_usuario)
     db.session.delete(usuario)
