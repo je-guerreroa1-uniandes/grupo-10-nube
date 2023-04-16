@@ -1,4 +1,4 @@
-version: '3.1'
+version: '3.9'
 
 services:
 
@@ -6,11 +6,17 @@ services:
     image: ghcr.io/je-guerreroa1-uniandes/grupo-10-nube/api:latest
     ports:
       - '5000:5000'
+    networks:
+      redproyecto:
+        ipv4_address: 10.130.13.2
     volumes:
       - uploads-volume:/app/uploads
 
   jobs:
     image: ghcr.io/je-guerreroa1-uniandes/grupo-10-nube/jobs:latest
+    networks:
+      redproyecto:
+        ipv4_address: 10.130.13.3
     volumes:
       - uploads-volume:/app/uploads
 
@@ -18,6 +24,9 @@ services:
     image: ghcr.io/je-guerreroa1-uniandes/grupo-10-nube/custom-redis:latest
     ports:
       - '6379:6379'
+    networks:
+      redproyecto:
+        ipv4_address: 10.130.13.4
     volumes:
       - redis-data:/data
 
@@ -28,10 +37,29 @@ services:
       - REDIS_HOSTS=local:redis:6379:0:lOGleSPirDOLEYsiceWlemPtO
     ports:
       - '8082:8081'
+    networks:
+      redproyecto:
+        ipv4_address: 10.130.13.5
     depends_on:
-      - 'redis'
+      - 'custom-redis'
+
+  custom-nginx:
+    image: ghcr.io/je-guerreroa1-uniandes/grupo-10-nube/custom-nginx:latest
+    ports:
+      - '8888:8888'
+    networks:
+      redproyecto:
+        ipv4_address: 10.130.13.6
 
 volumes:
 
   uploads-volume:
   redis-data:
+
+networks:
+
+  redproyecto:
+    ipam:
+      driver: default
+      config:
+        - subnet: '10.130.13.0/28'

@@ -17,6 +17,11 @@ from werkzeug.utils import secure_filename
 # from datetime import datetime
 import hashlib
 
+class VistaHealthCheck(Resource):
+    
+    def get(self):
+        return "Health check", 200
+
 class VistaSignIn(Resource):
 
     def post(self):

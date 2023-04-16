@@ -1,4 +1,4 @@
-version: '3.1'
+version: '3.9'
 
 services:
 
@@ -8,6 +8,9 @@ services:
       dockerfile: Dockerfile
     ports:
       - '5000:5000'
+    networks:
+      redproyecto:
+        ipv4_address: 10.130.13.2
     volumes:
       - uploads-volume:/app/uploads
 
@@ -15,6 +18,9 @@ services:
     build:
       context: ../jobs
       dockerfile: Dockerfile
+    networks:
+      redproyecto:
+        ipv4_address: 10.130.13.3
     volumes:
       - uploads-volume:/app/uploads
 
@@ -24,6 +30,9 @@ services:
       dockerfile: Dockerfile
     ports:
       - '6379:6379'
+    networks:
+      redproyecto:
+        ipv4_address: 10.130.13.4
     volumes:
       - redis-data:/data
 
@@ -33,11 +42,35 @@ services:
     environment:
       - REDIS_HOSTS=local:redis:6379:0:lOGleSPirDOLEYsiceWlemPtO
     ports:
-      - '8081:8081'
+      - '8082:8081'
+    networks:
+      redproyecto:
+        ipv4_address: 10.130.13.5
     depends_on:
-      - 'redis'
+      - 'custom-redis'
+
+  custom-nginx:
+    build:
+      context: ../custom-nginx
+      dockerfile: Dockerfile
+    ports:
+      - '8888:8888'
+    networks:
+      redproyecto:
+        ipv4_address: 10.130.13.6
+    depends_on:
+      - 'api'
+      - 'redis-commander'
 
 volumes:
 
   uploads-volume:
   redis-data:
+
+networks:
+
+  redproyecto:
+    ipam:
+      driver: default
+      config:
+        - subnet: '10.130.13.0/28'
