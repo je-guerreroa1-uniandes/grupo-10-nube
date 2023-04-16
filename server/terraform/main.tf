@@ -1,7 +1,7 @@
 provider "aws" {
   region     = "us-west-2"
-  access_key = "my-access-key"
-  secret_key = "my-secret-key"
+  access_key = var.the-access-key
+  secret_key = var.the-secret-key
 }
 
 data "aws_ami" "ubuntu" {
@@ -9,7 +9,7 @@ data "aws_ami" "ubuntu" {
 
   filter {
     name   = "name"
-    values = ["ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-*"]
+    values = ["ubuntu/images/hvm-ssd/ubuntu-focal-22.04-amd64-server-*"]
   }
 
   filter {
@@ -27,6 +27,6 @@ resource "aws_instance" "la_maquina" {
   user_data = file("user_data.sh")
 
   tags = {
-    Name = "Grupo10"
+    Name = "🚀 producción"
   }
 }
