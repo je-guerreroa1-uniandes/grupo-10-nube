@@ -3,6 +3,7 @@ version: '3.9'
 services:
 
   api:
+    container_name: api
     build:
       context: ../api
       dockerfile: Dockerfile
@@ -14,8 +15,11 @@ services:
     volumes:
       - uploads-volume:/app/uploads
       - processed-volume:/app/processed
+    depends_on:
+      - 'custom-postgres'
 
   jobs:
+    container_name: jobs
     build:
       context: ../jobs
       dockerfile: Dockerfile
@@ -27,6 +31,7 @@ services:
       - processed-volume:/app/processed
 
   custom-redis:
+    container_name: custom-redis
     build:
       context: ../custom-redis
       dockerfile: Dockerfile
@@ -39,6 +44,7 @@ services:
       - redis-data:/data
 
   redis-commander:
+    container_name: redis-commander
     image: ghcr.io/joeferner/redis-commander:latest
     restart: always
     environment:
@@ -51,7 +57,22 @@ services:
     depends_on:
       - 'custom-redis'
 
+  custom-postgres:
+    container_name: custom-postgres
+    build:
+      context: ../custom-postgres
+      dockerfile: Dockerfile
+    ports:
+      - "5433:5432"
+    networks:
+      redproyecto:
+        ipv4_address: 10.130.13.6
+    volumes:
+      - ../custom-postgres/docker_postgres_init.sql:/docker-entrypoint-initdb.d/docker_postgres_init.sql
+      - postgres-data:/var/lib/postgresql/data
+
   custom-nginx:
+    container_name: custom-nginx
     build:
       context: ../custom-nginx
       dockerfile: Dockerfile
@@ -59,7 +80,7 @@ services:
       - '8888:8888'
     networks:
       redproyecto:
-        ipv4_address: 10.130.13.6
+        ipv4_address: 10.130.13.7
     depends_on:
       - 'api'
       - 'redis-commander'
@@ -69,6 +90,7 @@ volumes:
   uploads-volume:
   processed-volume:
   redis-data:
+  postgres-data:
 
 networks:
 

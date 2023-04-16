@@ -3,6 +3,7 @@ version: '3.9'
 services:
 
   api:
+    container_name: api
     image: ghcr.io/je-guerreroa1-uniandes/grupo-10-nube/api:latest
     ports:
       - '3000:5000'
@@ -11,8 +12,11 @@ services:
         ipv4_address: 10.130.13.2
     volumes:
       - uploads-volume:/app/uploads
+    depends_on:
+      - 'custom-postgres'
 
   jobs:
+    container_name: jobs
     image: ghcr.io/je-guerreroa1-uniandes/grupo-10-nube/jobs:latest
     networks:
       redproyecto:
@@ -21,6 +25,7 @@ services:
       - uploads-volume:/app/uploads
 
   custom-redis:
+    container_name: custom-redis
     image: ghcr.io/je-guerreroa1-uniandes/grupo-10-nube/custom-redis:latest
     ports:
       - '6379:6379'
@@ -31,6 +36,7 @@ services:
       - redis-data:/data
 
   redis-commander:
+    container_name: redis-commander
     image: ghcr.io/joeferner/redis-commander:latest
     restart: always
     environment:
@@ -43,13 +49,29 @@ services:
     depends_on:
       - 'custom-redis'
 
+  custom-postgres:
+    container_name: custom-postgres
+    image: ghcr.io/je-guerreroa1-uniandes/grupo-10-nube/custom-postgres:latest
+    ports:
+      - "5433:5432"
+    networks:
+      redproyecto:
+        ipv4_address: 10.130.13.6
+    volumes:
+      - ../custom-postgres/docker_postgres_init.sql:/docker-entrypoint-initdb.d/docker_postgres_init.sql
+      - ${PWD}/postgres-data:/var/lib/postgresql/data
+
   custom-nginx:
+    container_name: custom-nginx
     image: ghcr.io/je-guerreroa1-uniandes/grupo-10-nube/custom-nginx:latest
     ports:
       - '8888:8888'
     networks:
       redproyecto:
-        ipv4_address: 10.130.13.6
+        ipv4_address: 10.130.13.7
+    depends_on:
+      - 'api'
+      - 'redis-commander'
 
 volumes:
 
