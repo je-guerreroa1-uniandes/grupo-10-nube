@@ -9,7 +9,7 @@ services:
     ports:
       - '5000:5000'
     networks:
-      red-proyecto:
+      redproyecto:
         ipv4_address: 10.130.13.2
     volumes:
       - uploads-volume:/app/uploads
@@ -19,7 +19,7 @@ services:
       context: ../jobs
       dockerfile: Dockerfile
     networks:
-      red-proyecto:
+      redproyecto:
         ipv4_address: 10.130.13.3
     volumes:
       - uploads-volume:/app/uploads
@@ -31,7 +31,7 @@ services:
     ports:
       - '6379:6379'
     networks:
-      red-proyecto:
+      redproyecto:
         ipv4_address: 10.130.13.4
     volumes:
       - redis-data:/data
@@ -44,7 +44,7 @@ services:
     ports:
       - '8082:8081'
     networks:
-      red-proyecto:
+      redproyecto:
         ipv4_address: 10.130.13.5
     depends_on:
       - 'custom-redis'
@@ -56,7 +56,7 @@ services:
     ports:
       - '8888:8888'
     networks:
-      red-proyecto:
+      redproyecto:
         ipv4_address: 10.130.13.6
     depends_on:
       - 'api'
@@ -69,7 +69,7 @@ volumes:
 
 networks:
 
-  red-proyecto:
+  redproyecto:
     ipam:
       driver: default
       config:
