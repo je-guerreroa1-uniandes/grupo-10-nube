@@ -15,6 +15,9 @@ Jinja2==3.0.1
 MarkupSafe==2.0.1
 marshmallow==3.12.1
 marshmallow-sqlalchemy==0.25.0
+psycopg==3.1.8
+psycopg2-binary==2.9.5
+pycparser==2.21
 PyJWT==2.1.0
 pytz==2021.1
 six==1.16.0
