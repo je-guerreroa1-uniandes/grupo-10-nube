@@ -1,0 +1,7 @@
+#!/bin/bash
+
+# Nota: Este script deve ser idempotente.
+# Es decir: si se ejecuta varias veces, debe llevar siempre al mismo estado.
+
+mkdir -p /home/ubuntu/.ssh
+echo -e "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQC0/DOiKunWsWeXakBgrAcSOYGpDz1HjjZuwhzBAYJSdPovVkq8ATT7FOU57X+voktHjHBBwYHvTV64SzSJ0yEPAS7HMtbZ/a5znlEZ4l4I6w/yrX73ACsr0B8GB3tebLC7qedN/7nF5UnRhbhe2HAGCyDcC6m6erIUNSzVNYK5ptmgng5ABHHf1QhI8fR2HK6lZYW/NGcokCFy4Cf5Pg1C+ZIVamYFgCEPrhWVfAIOY2quVsgp+Z7WeB2psNR1Ye55tz2gGK6XYDaBvwa9cp7EgU4QWJdI4MuJVRdoT50NJY8Y39QOZ2uVgBKG2Fq2/VA1Ki2FxF5N2MKZOoDe/tnPjWW182ekF+RYy4bOjFG4jrd4O2GFwxpSHYt2OyNN6X4YrAG9zq6OWX/g0V6me/x2/yZtVW7B20IcXDcK5EK/B1pJrrbmnvrA0Sihw255V2YpiNHrEa5gvb5rXSEKmWGnIt8iGgOzjD8wVppu5UCPMrgLumjL+TfVpCNhguPuROFZKgVBmpyvFVcxGTxcBvTbtztMaRUQYi7Xue7Gcf7t/PS/KsOWuw7StmU/exezPWml4kyD3hxBB7r8+T9QKkPJ4NrIOgoQ1L4xZ06XbR7FiQ9U6I48FfoysGAKaDENGEkQd2iXQ4aX8EXX3pYun9UxIcHQx+FlaAijkl86pwUQ6w== juanmanuel@puppet" > /home/ubuntu/.ssh/authorized_keys

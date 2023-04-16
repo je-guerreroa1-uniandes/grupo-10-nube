@@ -1,10 +1,31 @@
+# ZIP, 7Z, TAR.GZ, TAR.BZ2
+from modelos import db, Usuario, UsuarioSchema
+import zipfile
+import tarfile
+
+import os
+from enum import Enum
+
+from _curses import flash
 from flask import request
-from flask_restful import Resource
 from flask_jwt_extended import jwt_required, create_access_token, get_jwt_identity
+from flask import url_for
+from flask import send_from_directory
+from flask_restful import Resource
+from werkzeug.utils import secure_filename
+# from sqlalchemy.exc import IntegrityError
+# from sqlalchemy import and_
+# from datetime import datetime
+import hashlib
 
-from ..modelos import db, Usuario, UsuarioSchema
+from modelos import db, Usuario, UsuarioSchema
 
-usuario_schema = UsuarioSchema()  # Instanciar esquema creado
+usuario_schema = UsuarioSchema()
+
+class VistaHealthCheck(Resource):
+
+    def get(self):
+        return "Health check", 200
 
 class VistaSignIn(Resource):
   def post(self):

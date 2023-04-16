@@ -1,1 +1,1 @@
-docker compose --file docker-compose.yml down
+docker compose --file docker-compose.dev.yml down -v --rmi all
