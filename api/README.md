@@ -20,7 +20,3 @@ flask run
 # Desactivar el entorno (requiere: Activar el entorno)
 deactivate
 ```
-
-# Activar docker
-Ingresar a la carpeta de docker
-Bash start.sh usando una consola de Bash 
