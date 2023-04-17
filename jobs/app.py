@@ -40,5 +40,6 @@ def proccess_file(filename, new_format, fecha):
         print(f"function: {func}")
         func(os.path.join(UPLOAD_FOLDER, filename), os.path.join(PROCESS_FOLDER, filenameParts[0]))
         print(f"destination: {os.path.join(PROCESS_FOLDER, filename)}")
+    #     TODO: Update file state by id
     else:
         print("Invalid format")

@@ -18,8 +18,9 @@ from werkzeug.utils import secure_filename
 # from datetime import datetime
 import hashlib
 
-from modelos import db, Usuario, UsuarioSchema
+from modelos import db, Usuario, UsuarioSchema, File, FileSchema
 
+file_schema = FileSchema()
 usuario_schema = UsuarioSchema()  # Instanciar esquema creado
 
 class VistaHealthCheck(Resource):
@@ -89,4 +90,10 @@ class VistaFile(Resource):
       else:
         UPLOAD_FOLDER = './uploads'
         return send_from_directory(UPLOAD_FOLDER, filename)
+
+class VistaGetTask(Resource):
+    @jwt_required()
+    def get(self, task_id):
+       file = File.query.get_or_404(task_id)
+       return file_schema.dump(file)
 

@@ -1,7 +1,7 @@
 from flask import Flask
 
 # from .modelos import db, PuntoVenta
-from vistas import VistaHealthCheck, VistaSignIn, VistaUpdateSignIn, VistaLogIn, VistaCreateTasks, VistaFile
+from vistas import VistaHealthCheck, VistaSignIn, VistaUpdateSignIn, VistaLogIn, VistaCreateTasks, VistaFile, VistaGetTask
 from flask_restful import Api
 
 from flask import request
@@ -34,6 +34,7 @@ api.add_resource(VistaLogIn, '/api/auth/login')
 
 # Tasks management
 api.add_resource(VistaCreateTasks, '/api/tasks')
+api.add_resource(VistaGetTask, '/api/tasks/<task_id>')
 
 # File management
 api.add_resource(VistaFile, '/api/files/<filename>')

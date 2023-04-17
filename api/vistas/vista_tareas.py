@@ -27,7 +27,9 @@ class VistaCreateTasks(Resource):
         current_user = get_jwt_identity()  # Retrieve the ID of the current user
         print(f'current user {current_user}')
 
-        files = File.query.all()
+        files = File.query.filter(
+            File.user_id==current_user['id']
+        ).all()
         return [file_schema.dump(file) for file in files]
 
         # return {'mensaje': 'tarea creada exitosamente', 'usuario': current_user}
