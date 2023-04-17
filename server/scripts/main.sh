@@ -3,7 +3,7 @@
 # Ejecutar script desde esta carpeta
 
 # TODO: Escribir la ip correcta (Cambia en cada reinicio / cada 4 horas)
-MACHINE_IP='3.95.221.247'
+MACHINE_IP='54.84.119.128'
 
 function asksure() {
     echo "[$(date +'%F %T')]: $1 (Yy/Nn)"
