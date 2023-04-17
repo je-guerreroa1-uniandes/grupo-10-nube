@@ -59,7 +59,7 @@ class VistaCreateTasks(Resource):
         # f'Filename: {filename}, extension: {extension}'
 
         new_file = File(
-            filename=f'uploads/{filename}',
+            filename=filename,
             to_extension=destination_format,
             processed_filename='',
             state='UPLOADED',
@@ -71,9 +71,9 @@ class VistaCreateTasks(Resource):
 
         response_string = {'mensaje': 'tarea creada exitosamente', 'file': file_schema.dump(new_file)}
         # Call to message broker for queue the file
-        args = (filename, destination_format, datetime.utcnow())
+        args = (new_file.id, filename, destination_format, datetime.utcnow())
         result = proccess_file.apply_async(args=args, queue='files')
         task_id = result.id
-        print(f'New task id {task_id} {datetime.utcnow()}')
+        print(f'New task id {task_id} file_id: {new_file.id} datetime: {datetime.utcnow()}')
 
         return response_string, 200

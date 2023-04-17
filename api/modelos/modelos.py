@@ -20,7 +20,6 @@ class File(db.Model):
   user_id = db.Column(db.Integer)
   datetime = db.Column(db.String(128))
 
-
 class UsuarioSchema(SQLAlchemyAutoSchema):
   class Meta:
     model = Usuario

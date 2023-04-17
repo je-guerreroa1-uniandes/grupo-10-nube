@@ -97,3 +97,13 @@ class VistaGetTask(Resource):
        file = File.query.get_or_404(task_id)
        return file_schema.dump(file)
 
+    @jwt_required()
+    def delete(self, task_id):
+      file = File.query.filter_by(id=task_id).first()
+      if file:
+        db.session.delete(file)
+        db.session.commit()
+        return {'mensaje': f'Tarea {task_id} eliminada satisfactoriamente'}
+      else:
+        return {'mensaje': f'Error al eliminar tarea {task_id}'}
+
