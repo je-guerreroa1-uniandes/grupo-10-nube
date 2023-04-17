@@ -1,11 +1,14 @@
 import os
 from flask import request
-from flask import send_from_directory
+from flask_jwt_extended import jwt_required, create_access_token, get_jwt_identity
 from flask_restful import Resource
 from werkzeug.utils import secure_filename
 # Celery for message broking
 from datetime import datetime
 from celery import Celery
+from modelos import db, Usuario, UsuarioSchema, File, FileSchema
+
+file_schema = FileSchema()
 
 celery_app = Celery(__name__, broker='redis://:lOGleSPirDOLEYsiceWlemPtO@10.130.13.4:6379/0')
 @celery_app.task(name='proccess_file')
@@ -19,7 +22,21 @@ def allowed_file(filename):
 
 class VistaCreateTasks(Resource):
 
+    @jwt_required()
+    def get(self):
+        current_user = get_jwt_identity()  # Retrieve the ID of the current user
+        print(f'current user {current_user}')
+
+        files = File.query.filter(
+            File.user_id==current_user['id']
+        ).all()
+        return [file_schema.dump(file) for file in files]
+
+        # return {'mensaje': 'tarea creada exitosamente', 'usuario': current_user}
+
+    @jwt_required()
     def post(self):
+        current_user = get_jwt_identity()
         UPLOAD_FOLDER = './uploads'
         PROCESS_FOLDER = './processed'
         destination_format = request.form.get("to_format")
@@ -28,30 +45,35 @@ class VistaCreateTasks(Resource):
 
         # check if the post request has the file part
         if 'file' not in request.files:
-            # flash('No file part')
-            return 'No file part'#redirect(request.url)
+            return 'No file part'
         file = request.files['file']
-        # If the user does not select a file, the browser submits an
-        # empty file without a filename.
         if file.filename == '':
-            # flash('No selected file')
-            return 'No selected file'# redirect(request.url)
+            return 'No selected file'
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
             file.save(os.path.join(UPLOAD_FOLDER, filename))
-            #return redirect(url_for('download_file', name=filename))
-            # return url_for('download_file', name=filename)
 
         filenameParts = file.filename.split('.')
         filename = file.filename
         extension = filenameParts[-1]
-        response_string = f'Filename: {filename}, extension: {extension}'
+        # f'Filename: {filename}, extension: {extension}'
 
+        new_file = File(
+            filename=filename,
+            to_extension=destination_format,
+            processed_filename='',
+            state='UPLOADED',
+            user_id=current_user['id'],
+            datetime=datetime.utcnow()
+        )
+        db.session.add(new_file)
+        db.session.commit()
+
+        response_string = {'mensaje': 'tarea creada exitosamente', 'file': file_schema.dump(new_file)}
         # Call to message broker for queue the file
-        args = (filename, destination_format, datetime.utcnow())
+        args = (new_file.id, filename, destination_format, datetime.utcnow())
         result = proccess_file.apply_async(args=args, queue='files')
         task_id = result.id
-        print(f'New task id {task_id} {datetime.utcnow()}')
-
+        print(f'New task id {task_id} file_id: {new_file.id} datetime: {datetime.utcnow()}')
 
         return response_string, 200

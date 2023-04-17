@@ -1,7 +1,7 @@
 from flask import Flask
 
 # from .modelos import db, PuntoVenta
-from vistas import VistaHealthCheck, VistaSignIn, VistaUpdateSignIn, VistaLogIn, VistaCreateTasks, VistaFile
+from vistas import VistaHealthCheck, VistaSignIn, VistaUpdateSignIn, VistaLogIn, VistaCreateTasks, VistaFile, VistaGetTask
 from flask_restful import Api
 
 from flask import request
@@ -9,7 +9,7 @@ from modelos import db
 from flask_jwt_extended import JWTManager
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://postgres:ckhAMLIteFlYheRptAteapeze@10.130.13.6:5432/postgres"
+app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://converter_db:ckhAMLIteFlYheRptAteapeze@10.130.13.6:5432/conversion"
 app.config['SQLALCHEMY_TRACK_MODIFICATION'] = False
 
 app.config['JWT_SECRET_KEY'] = 'frase-secreta-grupo-10-nube'
@@ -34,8 +34,9 @@ api.add_resource(VistaLogIn, '/api/auth/login')
 
 # Tasks management
 api.add_resource(VistaCreateTasks, '/api/tasks')
+api.add_resource(VistaGetTask, '/api/tasks/<task_id>')
 
 # File management
-api.add_resource(VistaFile, '/api/files/<name>')
+api.add_resource(VistaFile, '/api/files/<filename>')
 
 jwt = JWTManager(app)
