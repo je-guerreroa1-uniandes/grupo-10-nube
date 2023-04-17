@@ -26,10 +26,6 @@ class VistaCreateTasks(Resource):
     def get(self):
         current_user = get_jwt_identity()  # Retrieve the ID of the current user
         print(f'current user {current_user}')
-        # current_user = Usuario.query.get(current_user_id)  # Retrieve the user object for the current user
-        # print(f'current user data {current_user}')
-        # Do something with the current user information
-        # ...
 
         files = File.query.all()
         return [file_schema.dump(file) for file in files]
@@ -58,10 +54,10 @@ class VistaCreateTasks(Resource):
         filenameParts = file.filename.split('.')
         filename = file.filename
         extension = filenameParts[-1]
-        response_string = f'Filename: {filename}, extension: {extension}'
+        # f'Filename: {filename}, extension: {extension}'
 
         new_file = File(
-            filename=filename,
+            filename=f'uploads/{filename}',
             to_extension=destination_format,
             processed_filename='',
             state='UPLOADED',
@@ -71,11 +67,11 @@ class VistaCreateTasks(Resource):
         db.session.add(new_file)
         db.session.commit()
 
+        response_string = {'mensaje': 'tarea creada exitosamente', 'file': file_schema.dump(new_file)}
         # Call to message broker for queue the file
         args = (filename, destination_format, datetime.utcnow())
         result = proccess_file.apply_async(args=args, queue='files')
         task_id = result.id
         print(f'New task id {task_id} {datetime.utcnow()}')
-
 
         return response_string, 200
