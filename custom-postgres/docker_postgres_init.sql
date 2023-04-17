@@ -1,2 +1,1 @@
-CREATE DATABASE "conversion" WITH ENCODING = 'UTF8';
 ALTER DATABASE "conversion" SET TIMEZONE TO 'America/Bogota';

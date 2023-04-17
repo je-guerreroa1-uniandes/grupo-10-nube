@@ -68,7 +68,7 @@ services:
       redproyecto:
         ipv4_address: 10.130.13.6
     volumes:
-      - ../custom-postgres/docker_postgres_init.sql:/docker-entrypoint-initdb.d/docker_postgres_init.sql
+#      - ../custom-postgres/docker_postgres_init.sql:/docker-entrypoint-initdb.d/docker_postgres_init.sql
       - postgres-data:/var/lib/postgresql/data
 
   custom-nginx:
