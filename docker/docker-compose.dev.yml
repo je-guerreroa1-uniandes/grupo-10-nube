@@ -86,6 +86,32 @@ services:
       - 'api'
       - 'redis-commander'
 
+#  jmeter:
+#    container_name: jmeter
+#    build:
+#      context: ../jmeter
+#      dockerfile: Dockerfile
+#    volumes:
+#      - ./tests:/tests
+#    command: jmeter -n -t /tests/my_test.jmx -l /tests/my_test.jtl
+#    networks:
+#      redproyecto:
+#        ipv4_address: 10.130.13.8
+
+  jmeter:
+    container_name: jmeter
+    image: jmeter-arm64v8
+    build:
+      context: ../jmeter
+      dockerfile: Dockerfile
+    volumes:
+      - ./tests:/tests
+    command: jmeter -n -t /tests/my_test.jmx -l /tests/my_test.jtl
+    networks:
+      redproyecto:
+        ipv4_address: 10.130.13.8
+
+
 volumes:
 
   uploads-volume:
