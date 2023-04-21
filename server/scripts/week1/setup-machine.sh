@@ -10,6 +10,7 @@ apt-cache policy docker-ce
 sudo apt -y install docker-ce docker-compose-plugin
 sudo systemctl status docker
 sudo usermod -aG docker ${USER}
+sudo apt autoremove
 
 # Logearse en ghcr.io (mejor manualmente, para hacerlo solo una vez)
 # docker login ghcr.io -u <username>
@@ -18,3 +19,4 @@ sudo usermod -aG docker ${USER}
 # https://youtu.be/d6qtr-rYxXw?t=241
 # sudo iptables -t nat -A PREROUTING -p tcp --dport 80 -j REDIRECT --to-port 8888
 # sudo iptables -t nat -A OUTPUT -o lo -p tcp --dport 80 -j REDIRECT --to-port 8888
+# sudo iptables-save

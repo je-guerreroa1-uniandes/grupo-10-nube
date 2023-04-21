@@ -2,9 +2,6 @@
 
 # Ejecutar script desde esta carpeta
 
-# TODO: Escribir la ip correcta (Cambia en cada reinicio / cada 4 horas)
-MACHINE_IP='54.84.119.128'
-
 function asksure() {
     echo "[$(date +'%F %T')]: $1 (Yy/Nn)"
     while read -r answer; do
@@ -20,17 +17,23 @@ function asksure() {
 }
 
 function main() {
+    if [ -z "${MACHINE_IP}" ]; then
+        echo "[$(date +'%F %T')]: No se ha encontrado la variable de entorno MACHINE_IP" 1>&2
+        exit 1
+    fi
+
     if asksure "¿Desea configurar la máquina?"; then
-        ssh -i ../secure/llavemaquina.pem ubuntu@${MACHINE_IP} 'bash -s' < ./setup-machine.sh
+        ssh-keygen -f "${HOME}/.ssh/known_hosts" -R "${MACHINE_IP}"
+        ssh -i ../../secure/key_prod_rsa ubuntu@${MACHINE_IP} 'bash -s' < ./setup-machine.sh
     fi
 
     if asksure "¿Desea Desplegar los componentes?"; then
-        scp -i ../secure/llavemaquina.pem ../../docker/docker-compose.prod.yml ubuntu@${MACHINE_IP}:~/docker-compose.prod.yml
-        scp -i ../secure/llavemaquina.pem ./run.sh ubuntu@${MACHINE_IP}:~/run.sh
+        scp -i ../../secure/key_prod_rsa ../../../docker/docker-compose.prod.yml ubuntu@${MACHINE_IP}:~/docker-compose.prod.yml
+        scp -i ../../secure/key_prod_rsa ./run.sh ubuntu@${MACHINE_IP}:~/run.sh
     fi
 
     if asksure "¿Desea entrar a la máquina para ejecutar ~/run.sh?"; then
-        ssh -i ../secure/llavemaquina.pem ubuntu@${MACHINE_IP}
+        ssh -i ../../secure/key_prod_rsa ubuntu@${MACHINE_IP}
     fi
 }
 
