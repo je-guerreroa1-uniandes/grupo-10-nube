@@ -6,14 +6,18 @@ def health_check(l):
 
 
 def login(l):
-    l.client.post("/api/auth/login", json={
+    l.client.post("/api/auth/login", data={
         "username": "usuario",
         "password": "contrasenia"
     })
 
 
 class Escenario1(TaskSet):
-    tasks = [health_check, login]
+    tasks = [health_check]
+
+
+class Escenario2(TaskSet):
+    tasks = [login]
 
 
 class WebsiteUser(HttpUser):
