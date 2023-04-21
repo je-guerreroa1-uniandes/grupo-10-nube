@@ -11,7 +11,7 @@
 ## 2) Establecer las reglas del firewall y tamaño del storage
 
 - 20 GB disco
-- Reglas de firewall (Entrada: [0.0.0.0:22, 0.0.0.0:80], salida: Entrada: [0.0.0.0:*])
+- Reglas de firewall (Entrada: [0.0.0.0:22, 0.0.0.0:80], salida: [0.0.0.0:*])
 
 ![Screenshot2](./images/Screenshot%20from%202023-04-16%2001-02-33.png)
 

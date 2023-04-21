@@ -12,6 +12,7 @@ services:
         ipv4_address: 10.130.13.2
     volumes:
       - uploads-volume:/app/uploads
+      - processed-volume:/app/processed
     depends_on:
       - 'custom-postgres'
 
@@ -23,6 +24,7 @@ services:
         ipv4_address: 10.130.13.3
     volumes:
       - uploads-volume:/app/uploads
+      - processed-volume:/app/processed
 
   custom-redis:
     container_name: custom-redis
@@ -75,8 +77,9 @@ services:
 volumes:
 
   uploads-volume:
-  postgres-data:
+  processed-volume:
   redis-data:
+  postgres-data:
 
 networks:
 

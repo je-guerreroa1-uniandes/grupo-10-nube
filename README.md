@@ -7,7 +7,7 @@ Desarrollo de software en la nube
 [Build and push docker images](https://github.com/marketplace/actions/build-and-push-docker-images)
 
 
-# Activar docker
+## Activar el entorno de desarrollo con docker
 ```bash
 cd docker
 bash start.sh
