@@ -12,6 +12,7 @@ services:
         ipv4_address: 10.130.13.2
     volumes:
       - uploads-volume:/app/uploads
+      - processed-volume:/app/processed
     depends_on:
       - 'custom-postgres'
 
@@ -23,6 +24,7 @@ services:
         ipv4_address: 10.130.13.3
     volumes:
       - uploads-volume:/app/uploads
+      - processed-volume:/app/processed
 
   custom-redis:
     container_name: custom-redis
@@ -35,19 +37,19 @@ services:
     volumes:
       - redis-data:/data
 
-  redis-commander:
-    container_name: redis-commander
-    image: ghcr.io/joeferner/redis-commander:latest
-    restart: always
-    environment:
-      - REDIS_HOSTS=local:redis:6379:0:lOGleSPirDOLEYsiceWlemPtO
-    ports:
-      - '8082:8081'
-    networks:
-      redproyecto:
-        ipv4_address: 10.130.13.5
-    depends_on:
-      - 'custom-redis'
+#  redis-commander:
+#    container_name: redis-commander
+#    image: ghcr.io/joeferner/redis-commander:latest
+#    restart: always
+#    environment:
+#      - REDIS_HOSTS=local:redis:6379:0:lOGleSPirDOLEYsiceWlemPtO
+#    ports:
+#      - '8082:8081'
+#    networks:
+#      redproyecto:
+#        ipv4_address: 10.130.13.5
+#    depends_on:
+#      - 'custom-redis'
 
   custom-postgres:
     container_name: custom-postgres
@@ -58,8 +60,7 @@ services:
       redproyecto:
         ipv4_address: 10.130.13.6
     volumes:
-      - ../custom-postgres/docker_postgres_init.sql:/docker-entrypoint-initdb.d/docker_postgres_init.sql
-      - ${PWD}/postgres-data:/var/lib/postgresql/data
+      - postgres-data:/var/lib/postgresql/data
 
   custom-nginx:
     container_name: custom-nginx
@@ -76,7 +77,9 @@ services:
 volumes:
 
   uploads-volume:
+  processed-volume:
   redis-data:
+  postgres-data:
 
 networks:
 

@@ -21,7 +21,7 @@ gunicorn==20.1.0
 itsdangerous==2.0.1
 Jinja2==3.0.1
 kombu==5.2.4
-MarkupSafe==2.0.1
+MarkupSafe==2.1.1
 marshmallow==3.12.1
 marshmallow-sqlalchemy==0.25.0
 prompt-toolkit==3.0.38
