@@ -72,7 +72,6 @@ services:
         ipv4_address: 10.130.13.7
     depends_on:
       - 'api'
-      - 'redis-commander'
 
 volumes:
 

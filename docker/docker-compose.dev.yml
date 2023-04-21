@@ -43,19 +43,19 @@ services:
     volumes:
       - redis-data:/data
 
-  redis-commander:
-    container_name: redis-commander
-    image: ghcr.io/joeferner/redis-commander:latest
-    restart: always
-    environment:
-      - REDIS_HOSTS=local:redis:6379:0:lOGleSPirDOLEYsiceWlemPtO
-    ports:
-      - '8082:8081'
-    networks:
-      redproyecto:
-        ipv4_address: 10.130.13.5
-    depends_on:
-      - 'custom-redis'
+#  redis-commander:
+#    container_name: redis-commander
+#    image: ghcr.io/joeferner/redis-commander:latest
+#    restart: always
+#    environment:
+#      - REDIS_HOSTS=local:redis:6379:0:lOGleSPirDOLEYsiceWlemPtO
+#    ports:
+#      - '8082:8081'
+#    networks:
+#      redproyecto:
+#        ipv4_address: 10.130.13.5
+#    depends_on:
+#      - 'custom-redis'
 
   custom-postgres:
     container_name: custom-postgres
@@ -83,7 +83,6 @@ services:
         ipv4_address: 10.130.13.7
     depends_on:
       - 'api'
-      - 'redis-commander'
 
 volumes:
 
