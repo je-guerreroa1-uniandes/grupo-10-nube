@@ -1,7 +1,11 @@
+# Esta variable es para la configuración del proyecto donde se va a desplegar la infraestructura.
+# Se les asigna valor en el archivo de variables de Terraform, que no se sube a GitHub (terraform.tfvars)
+# Y debe incluir las siguiente linea:
+# project = ""
+
 variable "project" {
   type        = string
   description = "El proyecto en gcloud al que se van a asociar todos los recursos"
-  default     = "grupo-10-nube-384401"
   sensitive   = false
 }
 

@@ -81,6 +81,7 @@ class VistaLogIn(Resource):
       return {'mensaje':'Nombre de usuario o contraseña incorrectos'}, 401
 
 class VistaFile(Resource):
+    @jwt_required()
     def get(self, filename):
       processed_file_formats = ['zip', 'gz', 'bz2']
       filename_parts = filename.split('.')
