@@ -26,7 +26,7 @@ function maquina_reverse_proxy() {
     if asksure "¿Desea Desplegar los componentes?"; then
         scp -i ../../secure/key_prod_rsa ../../../docker/docker-compose.prod.yml ubuntu@${G10_REVERSE_PROXY}:~/docker-compose.prod.yml
         scp -i ../../secure/key_prod_rsa ./run-reverse-proxy.sh ubuntu@${G10_REVERSE_PROXY}:~/run-reverse-proxy.sh
-        scp -i ../../secure/key_prod_rsa ./.bash_profile_reverse_proxy ubuntu@${G10_JOBS}:~/.bash_profile
+        scp -i ../../secure/key_prod_rsa ../../../docker/api.env ubuntu@${G10_JOBS}:~/api.env
     fi
 
     if asksure "¿Desea entrar a la máquina para ejecutar ~/run-reverse-proxy.sh?"; then
@@ -43,7 +43,6 @@ function maquina_nfs() {
     if asksure "¿Desea Desplegar los componentes?"; then
         scp -i ../../secure/key_prod_rsa ../../../docker/docker-compose.prod.yml ubuntu@${G10_NFS}:~/docker-compose.prod.yml
         scp -i ../../secure/key_prod_rsa ./run-nfs.sh ubuntu@${G10_NFS}:~/run-nfs.sh
-        scp -i ../../secure/key_prod_rsa ./.bash_profile_nfs ubuntu@${G10_JOBS}:~/.bash_profile
     fi
 
     if asksure "¿Desea entrar a la máquina para ejecutar ~/run-nfs.sh?"; then
@@ -60,7 +59,7 @@ function maquina_jobs() {
     if asksure "¿Desea Desplegar los componentes?"; then
         scp -i ../../secure/key_prod_rsa ../../../docker/docker-compose.prod.yml ubuntu@${G10_JOBS}:~/docker-compose.prod.yml
         scp -i ../../secure/key_prod_rsa ./run-jobs.sh ubuntu@${G10_JOBS}:~/run-jobs.sh
-        scp -i ../../secure/key_prod_rsa ./.bash_profile_jobs ubuntu@${G10_JOBS}:~/.bash_profile
+        scp -i ../../secure/key_prod_rsa ../../../docker/jobs.env ubuntu@${G10_JOBS}:~/jobs.env
     fi
 
     if asksure "¿Desea entrar a la máquina para ejecutar ~/run-jobs.sh?"; then
@@ -74,7 +73,7 @@ function main() {
         exit 1
     fi
 
-    if [ -f .bash_profile_reverse_proxy ] || [ -z .bash_profile_nfs ] || [ -f .bash_profile_jobs ]; then
+    if [ -f .env_api ] || [ -f .env_jobs ]; then
         echo "[$(date +'%F %T')]: No se ha encontrado una de las variable de entorno: G10_REVERSE_PROXY, G10_NFS ó G10_JOBS" 1>&2
         exit 1
     fi
