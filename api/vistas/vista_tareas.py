@@ -10,7 +10,8 @@ from modelos import db, Usuario, UsuarioSchema, File, FileSchema
 
 file_schema = FileSchema()
 
-celery_app = Celery(__name__, broker='redis://:lOGleSPirDOLEYsiceWlemPtO@10.130.13.4:6379/0')
+redis_address = '10.128.0.7:6379/0'
+celery_app = Celery(__name__, broker=f'redis://:lOGleSPirDOLEYsiceWlemPtO@{redis_address}')
 @celery_app.task(name='proccess_file')
 def proccess_file(*args):
     pass
