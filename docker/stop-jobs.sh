@@ -1,0 +1,1 @@
+docker compose --file docker-compose.jobs.dev.yml down -v --rmi all
