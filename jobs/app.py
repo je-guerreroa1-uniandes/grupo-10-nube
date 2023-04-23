@@ -1,3 +1,5 @@
+import logging
+import sys
 import zipfile
 import tarfile
 import os
@@ -5,6 +7,14 @@ from celery import Celery
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from modelos import File
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+handler = logging.StreamHandler(sys.stderr)
+handler.setLevel(logging.DEBUG)
+formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+handler.setFormatter(formatter)
+logger.addHandler(handler)
 
 redis_address = '10.128.0.7:6379/0'
 celery_app = Celery(__name__, broker=f'redis://:lOGleSPirDOLEYsiceWlemPtO@{redis_address}')
@@ -54,6 +64,7 @@ def proccess_file(file_id, filename, new_format, fecha):
     # print(f'found file:{file}')
     file_path = os.path.join(UPLOAD_FOLDER, filename)
     if not os.path.exists(file_path):
+        logger.error(f"File not found: {file_path}")
         print(f"File not found: {file_path}")
         return
 
