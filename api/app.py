@@ -9,7 +9,8 @@ from modelos import db
 from flask_jwt_extended import JWTManager
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://converter_db:ckhAMLIteFlYheRptAteapeze@10.130.13.6:5432/conversion"
+pg_vm_address = '10.128.0.7:5433'
+app.config['SQLALCHEMY_DATABASE_URI'] = f'postgresql://converter_db:ckhAMLIteFlYheRptAteapeze@{pg_vm_address}/conversion'
 app.config['SQLALCHEMY_TRACK_MODIFICATION'] = False
 
 app.config['JWT_SECRET_KEY'] = 'frase-secreta-grupo-10-nube'
