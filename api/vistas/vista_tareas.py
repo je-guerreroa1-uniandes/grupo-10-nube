@@ -7,11 +7,11 @@ from werkzeug.utils import secure_filename
 from datetime import datetime
 from celery import Celery
 from modelos import db, Usuario, UsuarioSchema, File, FileSchema
+import config
 
 file_schema = FileSchema()
 
-redis_address = '10.128.0.7:6379/0'
-celery_app = Celery(__name__, broker=f'redis://:lOGleSPirDOLEYsiceWlemPtO@{redis_address}')
+celery_app = Celery(__name__, broker=config.REDIS_URI)
 @celery_app.task(name='proccess_file')
 def proccess_file(*args):
     pass

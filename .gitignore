@@ -176,5 +176,10 @@ server/secure/key_prod_rsa
 server/secure/key_prod_rsa.pub
 server/secure/service-account-key.json
 
-# Archivos asociados a la base de datos
+docker/api.env
+docker/jobs.env
+
+# Archivos asociados a los volumenes en sistema de archivos
 docker/data
+docker/uploads
+docker/processed
