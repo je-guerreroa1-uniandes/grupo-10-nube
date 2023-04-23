@@ -5,11 +5,12 @@ from celery import Celery
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from modelos import File
+import config
 
-celery_app = Celery(__name__, broker='redis://:lOGleSPirDOLEYsiceWlemPtO@10.130.13.4:6379/0')
+celery_app = Celery(__name__, broker=config.REDIS_URI)
 
 # Configure SQLAlchemy to use the PostgreSQL database
-engine = create_engine('postgresql://converter_db:ckhAMLIteFlYheRptAteapeze@10.130.13.6:5432/conversion')
+engine = create_engine(config.POSTGRES_URI)
 Session = sessionmaker(bind=engine)
 session = Session()
 
