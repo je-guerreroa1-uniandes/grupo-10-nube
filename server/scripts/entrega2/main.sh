@@ -74,12 +74,6 @@ function main() {
         exit 1
     fi
 
-    if [ -f .env_api ] || [ -f .env_jobs ]; then
-        echo "[$(date +'%F %T')]: No se ha encontrado una de las variable de entorno: G10_REVERSE_PROXY, G10_NFS ó G10_JOBS" 1>&2
-        exit 1
-    fi
-
-
     maquina_nfs
     maquina_jobs
     maquina_reverse_proxy
