@@ -108,10 +108,6 @@ resource "google_compute_instance" "nfs" {
     network    = google_compute_network.g10_vpc.id
     subnetwork = google_compute_subnetwork.g10_vpc_central.id
     network_ip = "10.120.0.3"
-
-    access_config {
-      nat_ip = data.google_compute_address.reverse_proxy.address // this adds regional static ip to VM
-    }
   }
 }
 
@@ -140,10 +136,6 @@ resource "google_compute_instance" "jobs" {
     network    = google_compute_network.g10_vpc.id
     subnetwork = google_compute_subnetwork.g10_vpc_central.id
     network_ip = "10.120.0.4"
-
-    access_config {
-      nat_ip = data.google_compute_address.reverse_proxy.address // this adds regional static ip to VM
-    }
   }
 }
 # [END compute_engine_vms]
@@ -266,7 +258,7 @@ resource "google_sql_database_instance" "main" {
 
   settings {
     disk_autoresize       = true
-    disk_autoresize_limit = "10240" # GB
+    disk_autoresize_limit = "10240"            # GB
     tier                  = "db-custom-1-3840" # Buscar un tamaño mas pequeño para cuidar plata
 
     ip_configuration {
