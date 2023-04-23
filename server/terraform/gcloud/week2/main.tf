@@ -108,6 +108,9 @@ resource "google_compute_instance" "nfs" {
     network    = google_compute_network.g10_vpc.id
     subnetwork = google_compute_subnetwork.g10_vpc_central.id
     network_ip = "10.120.0.3"
+
+    access_config {
+    }
   }
 }
 
@@ -136,6 +139,9 @@ resource "google_compute_instance" "jobs" {
     network    = google_compute_network.g10_vpc.id
     subnetwork = google_compute_subnetwork.g10_vpc_central.id
     network_ip = "10.120.0.4"
+
+    access_config {
+    }
   }
 }
 # [END compute_engine_vms]
@@ -233,15 +239,6 @@ resource "google_compute_firewall" "https_out" {
   target_tags = ["g10-vpc"]
 }
 # [END vpc_firewall_rules]
-
-
-
-
-
-
-
-
-
 
 # [START sql_database_instance]
 locals {
