@@ -3,7 +3,7 @@ import sys
 import zipfile
 import tarfile
 import os
-from datetime import time
+import time
 
 from celery import Celery
 from sqlalchemy import create_engine
