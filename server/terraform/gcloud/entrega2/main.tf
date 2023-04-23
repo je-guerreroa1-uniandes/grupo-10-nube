@@ -48,6 +48,14 @@ resource "google_compute_subnetwork" "g10_vpc_central" {
 data "google_compute_address" "reverse_proxy" {
   name = "reverse-proxy"
 }
+
+data "google_compute_address" "nfs" {
+  name = "nfs"
+}
+
+data "google_compute_address" "jobs" {
+  name = "jobs"
+}
 # [END compute_static_addresses]
 
 # [START compute_engine_vms]
@@ -110,6 +118,7 @@ resource "google_compute_instance" "nfs" {
     network_ip = "10.120.0.3"
 
     access_config {
+      nat_ip = data.google_compute_address.nfs.address // this adds regional static ip to VM
     }
   }
 }
@@ -141,6 +150,7 @@ resource "google_compute_instance" "jobs" {
     network_ip = "10.120.0.4"
 
     access_config {
+      nat_ip = data.google_compute_address.jobs.address // this adds regional static ip to VM
     }
   }
 }
