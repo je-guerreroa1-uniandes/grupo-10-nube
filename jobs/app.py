@@ -6,6 +6,7 @@ import os
 import time
 
 from celery import Celery
+from werkzeug.utils import secure_filename
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from modelos import File
@@ -64,7 +65,7 @@ def proccess_file(file_id, filename, new_format, fecha):
     # Query the database for all users
     # file = session.query(File).filter_by(id=file_id).first()
     # print(f'found file:{file}')
-    file_path = os.path.join(UPLOAD_FOLDER, filename)
+    file_path = os.path.join(UPLOAD_FOLDER, secure_filename(filename))
     while not os.path.exists(file_path):
         logger.warning(f"File not found: {file_path}. Waiting 0.5 seconds...")
         time.sleep(0.5)
