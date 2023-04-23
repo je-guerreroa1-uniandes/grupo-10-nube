@@ -2,9 +2,9 @@
 
 # Ejecutar script desde esta carpeta
 
-CYAN=`tput setaf 6`
-RESET=`tput sgr0`
-BOLD=`tput bold`
+CYAN=$(tput setaf 6)
+RESET=$(tput sgr0)
+BOLD=$(tput bold)
 
 function asksure() {
     echo "${BOLD}${CYAN}[$(date +'%F %T')]: $1 (Yy/Nn)${RESET}"
