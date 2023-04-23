@@ -7,6 +7,10 @@ services:
     build:
       context: ../api
       dockerfile: Dockerfile
+    environment:
+      - G10_DB_HOST=10.128.0.7
+      - G10_DB_PORT=5433
+      - G10_REDIS_HOST=10.128.0.7
     ports:
       - '3000:5000'
     networks:

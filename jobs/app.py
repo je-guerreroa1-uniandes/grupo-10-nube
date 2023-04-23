@@ -10,6 +10,7 @@ from werkzeug.utils import secure_filename
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from modelos import File
+import config
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -19,12 +20,10 @@ formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
 handler.setFormatter(formatter)
 logger.addHandler(handler)
 
-redis_address = '10.128.0.7:6379/0'
-celery_app = Celery(__name__, broker=f'redis://:lOGleSPirDOLEYsiceWlemPtO@{redis_address}')
+celery_app = Celery(__name__, broker=config.REDIS_URI)
 
 # Configure SQLAlchemy to use the PostgreSQL database
-pg_vm_address = '10.128.0.7:5433'
-engine = create_engine(f'postgresql://converter_db:ckhAMLIteFlYheRptAteapeze@{pg_vm_address}/conversion')
+engine = create_engine(config.POSTGRES_URI)
 Session = sessionmaker(bind=engine)
 session = Session()
 
