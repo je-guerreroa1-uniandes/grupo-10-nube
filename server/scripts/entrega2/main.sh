@@ -26,7 +26,7 @@ function maquina_reverse_proxy() {
     if asksure "¿Desea tranferir el docker-compose y las .env a la máquina reverse_proxy?"; then
         scp -i ../../secure/key_prod_rsa ../../../docker/docker-compose.prod.yml ubuntu@${G10_REVERSE_PROXY}:~/docker-compose.prod.yml
         scp -i ../../secure/key_prod_rsa ./run-reverse-proxy.sh ubuntu@${G10_REVERSE_PROXY}:~/run-reverse-proxy.sh
-        scp -i ../../secure/key_prod_rsa ../../../docker/*.env ubuntu@${G10_JOBS}:~/
+        scp -i ../../secure/key_prod_rsa ../../../docker/*.env ubuntu@${G10_REVERSE_PROXY}:~/
     fi
 
     if asksure "¿Desea entrar a la máquina para ejecutar ~/run-reverse-proxy.sh?"; then
