@@ -17,16 +17,16 @@ function asksure() {
 }
 
 function maquina_reverse_proxy() {
-    if asksure "¿Desea configurar la máquina?"; then
+    if asksure "¿Desea hacer la configuración inicial de la máquina reverse_proxy?"; then
         ssh-keygen -f "${HOME}/.ssh/known_hosts" -R "${G10_REVERSE_PROXY}"
         ssh -i ../../secure/key_prod_rsa ubuntu@${G10_REVERSE_PROXY} 'bash -s' < ./setup-machine.sh
         ssh -i ../../secure/key_prod_rsa ubuntu@${G10_REVERSE_PROXY} 'bash -s' < ./port-bending-reverse-proxy.sh
     fi
 
-    if asksure "¿Desea Desplegar los componentes?"; then
+    if asksure "¿Desea tranferir el docker-compose y las .env a la máquina reverse_proxy?"; then
         scp -i ../../secure/key_prod_rsa ../../../docker/docker-compose.prod.yml ubuntu@${G10_REVERSE_PROXY}:~/docker-compose.prod.yml
         scp -i ../../secure/key_prod_rsa ./run-reverse-proxy.sh ubuntu@${G10_REVERSE_PROXY}:~/run-reverse-proxy.sh
-        scp -i ../../secure/key_prod_rsa ../../../docker/api.env ubuntu@${G10_JOBS}:~/api.env
+        scp -i ../../secure/key_prod_rsa ../../../docker/*.env ubuntu@${G10_JOBS}:~/
     fi
 
     if asksure "¿Desea entrar a la máquina para ejecutar ~/run-reverse-proxy.sh?"; then
@@ -35,14 +35,15 @@ function maquina_reverse_proxy() {
 }
 
 function maquina_nfs() {
-    if asksure "¿Desea configurar la máquina?"; then
+    if asksure "¿Desea hacer la configuración inicial de la máquina nfs?"; then
         ssh-keygen -f "${HOME}/.ssh/known_hosts" -R "${G10_NFS}"
         ssh -i ../../secure/key_prod_rsa ubuntu@${G10_NFS} 'bash -s' < ./setup-machine.sh
     fi
 
-    if asksure "¿Desea Desplegar los componentes?"; then
+    if asksure "¿Desea tranferir el docker-compose y las .env a la máquina nfs?"; then
         scp -i ../../secure/key_prod_rsa ../../../docker/docker-compose.prod.yml ubuntu@${G10_NFS}:~/docker-compose.prod.yml
         scp -i ../../secure/key_prod_rsa ./run-nfs.sh ubuntu@${G10_NFS}:~/run-nfs.sh
+        scp -i ../../secure/key_prod_rsa ../../../docker/*.env ubuntu@${G10_NFS}:~/
     fi
 
     if asksure "¿Desea entrar a la máquina para ejecutar ~/run-nfs.sh?"; then
@@ -51,15 +52,15 @@ function maquina_nfs() {
 }
 
 function maquina_jobs() {
-    if asksure "¿Desea configurar la máquina?"; then
+    if asksure "¿Desea hacer la configuración inicial de la máquina jobs?"; then
         ssh-keygen -f "${HOME}/.ssh/known_hosts" -R "${G10_JOBS}"
         ssh -i ../../secure/key_prod_rsa ubuntu@${G10_JOBS} 'bash -s' < ./setup-machine.sh
     fi
 
-    if asksure "¿Desea Desplegar los componentes?"; then
+    if asksure "¿Desea tranferir el docker-compose y las .env a la máquina jobs?"; then
         scp -i ../../secure/key_prod_rsa ../../../docker/docker-compose.prod.yml ubuntu@${G10_JOBS}:~/docker-compose.prod.yml
         scp -i ../../secure/key_prod_rsa ./run-jobs.sh ubuntu@${G10_JOBS}:~/run-jobs.sh
-        scp -i ../../secure/key_prod_rsa ../../../docker/jobs.env ubuntu@${G10_JOBS}:~/jobs.env
+        scp -i ../../secure/key_prod_rsa ../../../docker/*.env ubuntu@${G10_JOBS}:~/
     fi
 
     if asksure "¿Desea entrar a la máquina para ejecutar ~/run-jobs.sh?"; then
@@ -79,9 +80,9 @@ function main() {
     fi
 
 
-    maquina_reverse_proxy
     maquina_nfs
     maquina_jobs
+    maquina_reverse_proxy
 }
 
 main

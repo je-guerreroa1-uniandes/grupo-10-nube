@@ -15,8 +15,6 @@ services:
     volumes:
       - ./var/uploads:/app/uploads
       - ./var/processed:/app/processed
-    depends_on:
-      - 'custom-postgres'
 
   jobs:
     container_name: jobs
@@ -38,8 +36,6 @@ services:
     networks:
       redproyecto:
         ipv4_address: 10.130.13.4
-    volumes:
-      - redis-data:/data
 
 #  redis-commander:
 #    container_name: redis-commander
@@ -63,8 +59,6 @@ services:
     networks:
       redproyecto:
         ipv4_address: 10.130.13.6
-    volumes:
-      - postgres-data:/var/lib/postgresql/data
 
   custom-nginx:
     container_name: custom-nginx
@@ -76,11 +70,6 @@ services:
         ipv4_address: 10.130.13.7
     depends_on:
       - 'api'
-
-volumes:
-
-  redis-data:
-  postgres-data:
 
 networks:
 
