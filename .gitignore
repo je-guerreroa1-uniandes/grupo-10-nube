@@ -176,5 +176,9 @@ server/secure/key_prod_rsa
 server/secure/key_prod_rsa.pub
 server/secure/service-account-key.json
 
+server/scripts/entrega2/.bash_profile_jobs
+server/scripts/entrega2/.bash_profile_nfs
+server/scripts/entrega2/.bash_profile_reverse_proxy
+
 # Archivos asociados a la base de datos
 docker/data
