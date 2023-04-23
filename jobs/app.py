@@ -84,7 +84,7 @@ def proccess_file(file_id, filename, new_format, fecha):
         print(f"original: {os.path.join(PROCESS_FOLDER, filename)}")
         print(f"destination: {processed_filename}")
         file = session.query(File).filter_by(id=file_id).first()
-        processed_filename_parts = secure_filename(processed_filename.split('/'))
+        processed_filename_parts = processed_filename.split('/')
         file.processed_filename = processed_filename_parts[-1]
         file.state = 'PROCESSED'
         session.add(file)
