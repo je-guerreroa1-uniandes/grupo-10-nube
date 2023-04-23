@@ -1,11 +1,24 @@
+import logging
+import sys
 import zipfile
 import tarfile
 import os
+import time
+
 from celery import Celery
+from werkzeug.utils import secure_filename
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from modelos import File
 import config
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+handler = logging.StreamHandler(sys.stderr)
+handler.setLevel(logging.DEBUG)
+formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+handler.setFormatter(formatter)
+logger.addHandler(handler)
 
 celery_app = Celery(__name__, broker=config.REDIS_URI)
 
@@ -51,13 +64,24 @@ def proccess_file(file_id, filename, new_format, fecha):
     # Query the database for all users
     # file = session.query(File).filter_by(id=file_id).first()
     # print(f'found file:{file}')
+    file_path = os.path.join(UPLOAD_FOLDER, secure_filename(filename))
+    while not os.path.exists(file_path):
+        logger.warning(f"File not found: {file_path}. Waiting 0.5 seconds...")
+        time.sleep(0.5)
+    logger.info(f"File found: {file_path}")
+
+    if not os.path.exists(file_path):
+        logger.error(f"File not found: {file_path}")
+        print(f"File not found: {file_path}")
+        return
 
     if new_format in formats.keys():
         print(f"calling {new_format}")
         func = formats[new_format]
         print(f"function: {func}")
-        processed_filename = func(os.path.join(UPLOAD_FOLDER, filename), os.path.join(PROCESS_FOLDER, filenameParts[0]))
-        print(f"destination: {os.path.join(PROCESS_FOLDER, filename)}")
+        processed_filename = func(file_path, os.path.join(PROCESS_FOLDER, filenameParts[0]))
+        print(f"original: {os.path.join(PROCESS_FOLDER, filename)}")
+        print(f"destination: {processed_filename}")
         file = session.query(File).filter_by(id=file_id).first()
         processed_filename_parts = processed_filename.split('/')
         file.processed_filename = processed_filename_parts[-1]
