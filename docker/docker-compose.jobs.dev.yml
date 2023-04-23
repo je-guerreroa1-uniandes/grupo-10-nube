@@ -23,6 +23,10 @@ services:
     build:
       context: ../jobs
       dockerfile: Dockerfile
+    environment:
+      - G10_DB_HOST=10.128.0.7
+      - G10_DB_PORT=5433
+      - G10_REDIS_HOST=10.128.0.7
     networks:
       redproyecto:
         ipv4_address: 10.130.13.3
