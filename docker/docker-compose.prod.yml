@@ -5,24 +5,28 @@ services:
   api:
     container_name: api
     image: ghcr.io/je-guerreroa1-uniandes/grupo-10-nube/api:latest
+    env_file:
+      - api.env
     ports:
       - '3000:5000'
     networks:
       redproyecto:
         ipv4_address: 10.130.13.2
     volumes:
-      - uploads-volume:/app/uploads
-    depends_on:
-      - 'custom-postgres'
+      - ./uploads:/app/uploads
+      - ./processed:/app/processed
 
   jobs:
     container_name: jobs
     image: ghcr.io/je-guerreroa1-uniandes/grupo-10-nube/jobs:latest
+    env_file:
+      - jobs.env
     networks:
       redproyecto:
         ipv4_address: 10.130.13.3
     volumes:
-      - uploads-volume:/app/uploads
+      - ./uploads:/app/uploads
+      - ./processed:/app/processed
 
   custom-redis:
     container_name: custom-redis
@@ -32,22 +36,20 @@ services:
     networks:
       redproyecto:
         ipv4_address: 10.130.13.4
-    volumes:
-      - redis-data:/data
 
-  redis-commander:
-    container_name: redis-commander
-    image: ghcr.io/joeferner/redis-commander:latest
-    restart: always
-    environment:
-      - REDIS_HOSTS=local:redis:6379:0:lOGleSPirDOLEYsiceWlemPtO
-    ports:
-      - '8082:8081'
-    networks:
-      redproyecto:
-        ipv4_address: 10.130.13.5
-    depends_on:
-      - 'custom-redis'
+#  redis-commander:
+#    container_name: redis-commander
+#    image: ghcr.io/joeferner/redis-commander:latest
+#    restart: always
+#    environment:
+#      - REDIS_HOSTS=local:redis:6379:0:lOGleSPirDOLEYsiceWlemPtO
+#    ports:
+#      - '8082:8081'
+#    networks:
+#      redproyecto:
+#        ipv4_address: 10.130.13.5
+#    depends_on:
+#      - 'custom-redis'
 
   custom-postgres:
     container_name: custom-postgres
@@ -57,9 +59,6 @@ services:
     networks:
       redproyecto:
         ipv4_address: 10.130.13.6
-    volumes:
-      - ../custom-postgres/docker_postgres_init.sql:/docker-entrypoint-initdb.d/docker_postgres_init.sql
-      - ${PWD}/postgres-data:/var/lib/postgresql/data
 
   custom-nginx:
     container_name: custom-nginx
@@ -71,12 +70,6 @@ services:
         ipv4_address: 10.130.13.7
     depends_on:
       - 'api'
-      - 'redis-commander'
-
-volumes:
-
-  uploads-volume:
-  redis-data:
 
 networks:
 

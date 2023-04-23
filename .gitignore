@@ -169,7 +169,17 @@ terraform.rc
 
 # Archivos del grupo 10
 # Archivos asociados al despliegue
-server/secure/github-token.txt
+# llavemaquina.pem solo existio en la semana 1, cuando desplegamos en AWS:
 server/secure/llavemaquina.pem
+server/secure/github-token.txt
 server/secure/key_prod_rsa
 server/secure/key_prod_rsa.pub
+server/secure/service-account-key.json
+
+docker/api.env
+docker/jobs.env
+
+# Archivos asociados a los volumenes en sistema de archivos
+docker/data
+docker/uploads
+docker/processed
