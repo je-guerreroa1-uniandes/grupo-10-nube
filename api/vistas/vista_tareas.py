@@ -60,7 +60,7 @@ class VistaCreateTasks(Resource):
         # f'Filename: {filename}, extension: {extension}'
 
         new_file = File(
-            filename=filename,
+            filename=secure_filename(file.filename),
             to_extension=destination_format,
             processed_filename='',
             state='UPLOADED',
