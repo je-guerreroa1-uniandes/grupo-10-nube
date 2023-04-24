@@ -2,15 +2,19 @@
 
 # Ejecutar script desde esta carpeta
 
+CYAN=$(tput setaf 6)
+RESET=$(tput sgr0)
+BOLD=$(tput bold)
+
 function asksure() {
-    echo "[$(date +'%F %T')]: $1 (Yy/Nn)"
+    echo "${BOLD}${CYAN}[$(date +'%F %T')]: $1 (Yy/Nn)${RESET}"
     while read -r answer; do
         if [[ $answer = [YyNn] ]]; then
             [[ $answer = [Yy] ]] && retval=0
             [[ $answer = [Nn] ]] && retval=1
             break
         fi
-        echo "[$(date +'%F %T')]: $1 (Yy/Nn)"
+        echo "${BOLD}${CYAN}[$(date +'%F %T')]: $1 (Yy/Nn)${RESET}"
     done
 
     return ${retval}
