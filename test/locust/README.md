@@ -17,9 +17,11 @@ source .venv/bin/activate
 pip3 install -r requirements.txt
 # Ejecuta la prueba de carga
 locust
-# locust --users 1000 --spawn-rate 25 -H http://grupo10nube.com --locustfile locustfile.py
-# locust --users 350 --spawn-rate 25 -H http://grupo10nube.com --locustfile locustfile.py
-# locust --users 100 --spawn-rate 5 -H http://grupo10nube.com --locustfile locustfile.py
+# Ejemplo del parámetro run-time: [--run-time 1h30m, --run-time 60 # default unit is seconds]
+
+# locust -H http://grupo10nube.com --locustfile locustfile.py --headless --run-time 3m --stop-timeout 10s --users 1000 --spawn-rate 25
+# locust -H http://grupo10nube.com --locustfile locustfile.py --headless --run-time 3m --stop-timeout 10s --users 350 --spawn-rate 25
+# locust -H http://grupo10nube.com --locustfile locustfile.py --headless --run-time 3m --stop-timeout 10s --users 100 --spawn-rate 5
 
 # Desactivar el entorno (requiere: Activar el entorno)
 deactivate
