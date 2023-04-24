@@ -16,7 +16,8 @@ app.config['SQLALCHEMY_TRACK_MODIFICATION'] = False
 
 app.config['JWT_SECRET_KEY'] = config.G10_JWT_SECRET
 app.config['PROPAGATE_EXCEPTIONS'] = True
-
+# Para sacar un token de pruebas
+# app.config["JWT_ACCESS_TOKEN_EXPIRES"] = False
 
 app_context = app.app_context()  # Hacer push del contexto de la app
 app_context.push()

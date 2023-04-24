@@ -1,6 +1,7 @@
 import logging
 import sys
 import zipfile
+import zlib
 import tarfile
 import os
 import time
@@ -27,11 +28,13 @@ engine = create_engine(config.POSTGRES_URI)
 Session = sessionmaker(bind=engine)
 session = Session()
 
+
 def to_zip(file_path, destination_path):
     processed_filename = destination_path + '.zip'
-    with zipfile.ZipFile(processed_filename, 'w') as zip_file:
+    with zipfile.ZipFile(processed_filename, mode='w', compression=zipfile.ZIP_DEFLATED, compresslevel=zlib.Z_BEST_COMPRESSION) as zip_file:
         zip_file.write(file_path)
     return processed_filename
+
 
 def to_tar_gz(file_path, destination_path):
     processed_filename = destination_path + '.tar.gz'
@@ -40,20 +43,25 @@ def to_tar_gz(file_path, destination_path):
         tar.add(file_path, arcname=os.path.basename(file_path))
     return processed_filename
 
+
 def to_tar_bz2(file_path, destination_path):
     processed_filename = destination_path + '.tar.bz2'
     with tarfile.open(destination_path + '.tar.bz2', 'w:bz2') as tar:
         tar.add(file_path, arcname=os.path.basename(file_path))
     return processed_filename
+
+
 @celery_app.task(name='proccess_file')
 def proccess_file(file_id, filename, new_format, fecha):
     UPLOAD_FOLDER = './uploads'
     PROCESS_FOLDER = './processed'
     filenameParts = filename.split('.')
 
-    log_file_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'log_conversion.txt')
+    log_file_path = os.path.join(os.path.dirname(
+        os.path.abspath(__file__)), 'log_conversion.txt')
     with open(log_file_path, 'a+') as file:
-        file.write('{} to {} - solicitud de conversion: {}\n'.format(filename, new_format, fecha))
+        file.write(
+            '{} to {} - solicitud de conversion: {}\n'.format(filename, new_format, fecha))
 
     formats = {
         'zip': to_zip,
@@ -79,7 +87,8 @@ def proccess_file(file_id, filename, new_format, fecha):
         print(f"calling {new_format}")
         func = formats[new_format]
         print(f"function: {func}")
-        processed_filename = func(file_path, os.path.join(PROCESS_FOLDER, filenameParts[0]))
+        processed_filename = func(file_path, os.path.join(
+            PROCESS_FOLDER, filenameParts[0]))
         print(f"original: {os.path.join(PROCESS_FOLDER, filename)}")
         print(f"destination: {processed_filename}")
         file = session.query(File).filter_by(id=file_id).first()
