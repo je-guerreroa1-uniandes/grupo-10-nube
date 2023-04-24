@@ -56,6 +56,10 @@ data "google_compute_address" "nfs" {
 data "google_compute_address" "jobs" {
   name = "jobs"
 }
+
+data "google_compute_address" "locust" {
+  name = "locust"
+}
 # [END compute_static_addresses]
 
 # [START compute_engine_vms]
@@ -154,6 +158,38 @@ resource "google_compute_instance" "jobs" {
     }
   }
 }
+
+resource "google_compute_instance" "locust" {
+  name         = "locust"
+  machine_type = "custom-1-1024" # [1]vCPU [1] GB RAM
+  zone         = var.zone
+  tags         = ["g10-vpc", "ssh", "locust"]
+
+  # Enable virtual display
+  enable_display = true
+
+  boot_disk {
+    initialize_params {
+      image = "ubuntu-2204-jammy-v20230415"
+      size  = 20
+      type  = "pd-standard"
+    }
+  }
+
+  metadata = {
+    ssh-keys = "ubuntu:${file(var.ssh_pub_key_file)}"
+  }
+
+  network_interface {
+    network    = google_compute_network.g10_vpc.id
+    subnetwork = google_compute_subnetwork.g10_vpc_central.id
+    network_ip = "10.120.0.5"
+
+    access_config {
+      nat_ip = data.google_compute_address.locust.address // this adds regional static ip to VM
+    }
+  }
+}
 # [END compute_engine_vms]
 
 # [START vpc_firewall_rules]
@@ -237,6 +273,19 @@ resource "google_compute_firewall" "http_in" {
   target_tags   = ["http-server"]
 }
 
+resource "google_compute_firewall" "locust_in" {
+  name = "vpc-allow-locust"
+  allow {
+    ports    = ["8089"]
+    protocol = "tcp"
+  }
+  direction     = "INGRESS"
+  network       = google_compute_network.g10_vpc.id
+  priority      = 1000
+  source_ranges = ["0.0.0.0/0"]
+  target_tags   = ["locust"]
+}
+
 resource "google_compute_firewall" "https_out" {
   name = "vpc-send-dns-http-https"
   allow {
@@ -247,6 +296,18 @@ resource "google_compute_firewall" "https_out" {
   network     = google_compute_network.g10_vpc.id
   priority    = 1000
   target_tags = ["g10-vpc"]
+}
+
+resource "google_compute_firewall" "locust_out" {
+  name = "vpc-send-locust"
+  allow {
+    ports    = ["8089"]
+    protocol = "tcp"
+  }
+  direction   = "EGRESS"
+  network     = google_compute_network.g10_vpc.id
+  priority    = 1000
+  target_tags = ["locust"]
 }
 # [END vpc_firewall_rules]
 

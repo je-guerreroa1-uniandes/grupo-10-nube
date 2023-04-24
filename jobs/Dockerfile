@@ -1,11 +1,11 @@
 FROM python:3.9.16-slim-buster
 
-#RUN set -eux; \
-#    apt-get update; \
-#    apt-get install -y --no-install-recommends \
-#    p7zip-full \
-#    ; \
-#    rm -rf /var/lib/apt/lists/*
+RUN set -eux; \
+    apt-get update; \
+    apt-get install -y --no-install-recommends \
+    p7zip-full \
+    ; \
+    rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
