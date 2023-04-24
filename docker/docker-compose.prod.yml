@@ -5,6 +5,7 @@ services:
   api:
     container_name: api
     image: ghcr.io/je-guerreroa1-uniandes/grupo-10-nube/api:latest
+    user: 'nobody:nogroup'
     env_file:
       - api.env
     ports:
@@ -19,6 +20,7 @@ services:
   jobs:
     container_name: jobs
     image: ghcr.io/je-guerreroa1-uniandes/grupo-10-nube/jobs:latest
+    user: 'nobody:nogroup'
     env_file:
       - jobs.env
     networks:
