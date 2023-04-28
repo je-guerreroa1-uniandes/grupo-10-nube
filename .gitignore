@@ -173,11 +173,11 @@ docker/data
 # ======================== Archivos del grupo 10 ========================
 # Archivos asociados al despliegue (estructura de los secretos)
 # llavemaquina.pem solo existio en la semana 1, cuando desplegamos en AWS:
-server/secure/llavemaquina.pem
-server/secure/github-token.txt
-server/secure/key_prod_rsa
-server/secure/key_prod_rsa.pub
-server/secure/service-account-key.json
+servers/secure/llavemaquina.pem
+servers/secure/github-token.txt
+servers/secure/key_prod_rsa
+servers/secure/key_prod_rsa.pub
+servers/secure/service-account-key.json
 
 docker/api.env
 docker/jobs.env
