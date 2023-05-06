@@ -58,20 +58,20 @@ function maquina_jobs() {
 
 function maquina_reverse_proxy() {
     if asksure "¿Desea hacer la configuración inicial de la máquina reverse_proxy?"; then
-        ssh-keygen -f "${HOME}/.ssh/known_hosts" -R "${G10_REVERSE_PROXY_IP}"
-        ssh -i ../../secure/key_prod_rsa ubuntu@${G10_REVERSE_PROXY_IP} 'bash -s' < ./setup-docker.sh
-        ssh -i ../../secure/key_prod_rsa ubuntu@${G10_REVERSE_PROXY_IP} 'bash -s' < ./setup-nfs-client.sh
-        ssh -i ../../secure/key_prod_rsa ubuntu@${G10_REVERSE_PROXY_IP} 'bash -s' < ./setup-port-bending-reverse-proxy.sh
+        ssh-keygen -f "${HOME}/.ssh/known_hosts" -R "${G10_API_IP}"
+        ssh -i ../../secure/key_prod_rsa ubuntu@${G10_API_IP} 'bash -s' < ./setup-docker.sh
+        ssh -i ../../secure/key_prod_rsa ubuntu@${G10_API_IP} 'bash -s' < ./setup-nfs-client.sh
+        ssh -i ../../secure/key_prod_rsa ubuntu@${G10_API_IP} 'bash -s' < ./setup-port-bending-reverse-proxy.sh
     fi
 
     if asksure "¿Desea tranferir el docker-compose y las .env a la máquina reverse_proxy?"; then
-        scp -i ../../secure/key_prod_rsa ../../../docker/docker-compose.prod.yml ubuntu@${G10_REVERSE_PROXY_IP}:~/docker-compose.prod.yml
-        scp -i ../../secure/key_prod_rsa ./run-reverse-proxy.sh ubuntu@${G10_REVERSE_PROXY_IP}:~/run-reverse-proxy.sh
-        scp -i ../../secure/key_prod_rsa ../../../docker/*.env ubuntu@${G10_REVERSE_PROXY_IP}:~/
+        scp -i ../../secure/key_prod_rsa ../../../docker/docker-compose.prod.yml ubuntu@${G10_API_IP}:~/docker-compose.prod.yml
+        scp -i ../../secure/key_prod_rsa ./run-reverse-proxy.sh ubuntu@${G10_API_IP}:~/run-reverse-proxy.sh
+        scp -i ../../secure/key_prod_rsa ../../../docker/*.env ubuntu@${G10_API_IP}:~/
     fi
 
     if asksure "¿Desea entrar a la máquina para ejecutar ~/run-reverse-proxy.sh?"; then
-        ssh -i ../../secure/key_prod_rsa ubuntu@${G10_REVERSE_PROXY_IP}
+        ssh -i ../../secure/key_prod_rsa ubuntu@${G10_API_IP}
     fi
 }
 
@@ -93,8 +93,8 @@ function maquina_locust() {
 }
 
 function main() {
-    if [ -z "${G10_REVERSE_PROXY_IP}" ] || [ -z "${G10_NFS_IP}" ] || [ -z "${G10_JOBS_IP}" ] || [ -z "${G10_LOCUST_IP}" ]; then
-        echo "[$(date +'%F %T')]: No se ha encontrado una de las variable de entorno: G10_REVERSE_PROXY_IP, G10_NFS_IP, G10_JOBS_IP ó G10_LOCUST_IP" 1>&2
+    if [ -z "${G10_API_IP}" ] || [ -z "${G10_NFS_IP}" ] || [ -z "${G10_JOBS_IP}" ] || [ -z "${G10_LOCUST_IP}" ]; then
+        echo "[$(date +'%F %T')]: No se ha encontrado una de las variable de entorno: G10_API_IP, G10_NFS_IP, G10_JOBS_IP ó G10_LOCUST_IP" 1>&2
         exit 1
     fi
 
