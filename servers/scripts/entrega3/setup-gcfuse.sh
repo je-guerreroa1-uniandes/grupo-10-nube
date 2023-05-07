@@ -1,6 +1,3 @@
-#!/bin/bash -x
-
-sudo apt update
 #!/bin/bash
 
 # Add the GCSFuse repository to package sources
@@ -15,26 +12,23 @@ sudo apt-get update
 
 # Install GCSFuse
 sudo apt-get install gcsfuse
-sudo mkdir -p /gcfuse/general
-
-sudo gcsfuse --foreground --only-dir general uniandes-grupo-10.appspot.com /gcsfuse/general
+sudo mkdir -p /gcsfuse/general
 
 # create and start gcsfuse service
 sudo tee /etc/systemd/system/gcsfuse.service > /dev/null <<EOF
 [Unit]
 Description=GCSFuse Mount
+After=network-online.target
 
 [Service]
 Type=simple
-ExecStart=/usr/bin/gcsfuse --foreground --only-dir general uniandes-grupo-10.appspot.com /gcsfuse/general
-ExecStop=/bin/fusermount -u /gcsfuse/general
+ExecStart=/usr/bin/sudo /usr/bin/gcsfuse --only-dir general uniandes-grupo-10.appspot.com /gcsfuse/general
+ExecStop=/usr/bin/sudo /bin/fusermount -u /gcsfuse/general
 Restart=always
 
 [Install]
 WantedBy=multi-user.target
 EOF
-
-sudo chmod +x /etc/systemd/system/gcsfuse.service
 
 sudo systemctl daemon-reload
 sudo systemctl enable gcsfuse.service
