@@ -10,7 +10,7 @@ apt-cache policy docker-ce
 sudo apt -y install docker-ce docker-compose-plugin
 sudo systemctl status docker
 sudo usermod -aG docker ${USER}
-sudo apt autoremove
+sudo apt autoremove -y
 
 # Logearse en ghcr.io (mejor manualmente, para hacerlo solo una vez)
 # docker login ghcr.io -u <username>
