@@ -34,6 +34,8 @@ Restart=always
 WantedBy=multi-user.target
 EOF
 
+sudo chmod +x /etc/systemd/system/gcsfuse.service
+
 sudo systemctl daemon-reload
 sudo systemctl enable gcsfuse.service
 sudo systemctl start gcsfuse.service
