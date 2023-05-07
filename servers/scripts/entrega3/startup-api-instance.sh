@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # clone repository
-cd /home/$USER
+cd /home/ubuntu
 git clone https://github.com/je-guerreroa1-uniandes/grupo-10-nube.git
 
 # run setup machine script
@@ -26,10 +26,10 @@ After=docker.service
 
 [Service]
 Restart=always
-User=$USER
-WorkingDirectory=/home/$USER/grupo-10-nube/docker
-ExecStart=/usr/bin/sudo /usr/bin/docker compose --file /home/$USER/grupo-10-nube/docker/docker-compose.api.dev.yml up -d --build --remove-orphans
-ExecStop=/usr/bin/docker compose down
+User=ubuntu
+WorkingDirectory=/home/ubuntu/grupo-10-nube/docker
+ExecStart=/usr/bin/sudo /usr/bin/docker compose --file /home/ubuntu/grupo-10-nube/docker/docker-compose.api.dev.yml up -d --build --remove-orphans
+ExecStop=/usr/bin/sudo /usr/bin/docker compose down
 
 [Install]
 WantedBy=multi-user.target
