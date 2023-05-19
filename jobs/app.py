@@ -10,7 +10,7 @@ from celery import Celery
 from werkzeug.utils import secure_filename
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from celery_pubsub import subscribe
+from google.cloud import pubsub_v1
 from modelos import File
 import config
 
@@ -26,14 +26,37 @@ logger.addHandler(handler)
 celery_app = Celery(__name__)
 celery_app.config_from_object(config)
 
-# Configure the transport
-celery_app.conf.update(
-    broker_transport_options={
-        "transport": "celery_pubsub.pubsub:Transport",
-        "project_id": config.GOOGLE_PUBSUB_PROJECT_ID,
-        "subscription_id": config.GOOGLE_PUBSUB_SUBSCRIPTION_ID,
-    }
+subscriber = pubsub_v1.SubscriberClient()
+
+subscription_path = subscriber.subscription_path(
+    config.GOOGLE_PUBSUB_PROJECT_ID, config.GOOGLE_PUBSUB_SUBSCRIPTION_ID
 )
+
+def callback(message):
+    payload = message.data.decode()
+    file_id = message.attributes.get('file_id')
+    filename = message.attributes.get('filename')
+    new_format = message.attributes.get('new_format')
+    fecha = message.attributes.get('fecha')
+
+    print("Received message:")
+    print("Payload:", payload)
+    print("File ID:", file_id)
+    print("Filename:", filename)
+    print("New Format:", new_format)
+    print("Fecha:", fecha)
+
+    proccess_file.delay(file_id, filename, new_format, fecha)
+
+    message.ack()
+
+future = subscriber.subscribe(subscription_path, callback)
+
+try:
+    future.result()
+except Exception as e:
+    print("Error occurred:", e)
+
 
 # Configure SQLAlchemy to use the PostgreSQL database
 engine = create_engine(config.POSTGRES_URI)
@@ -62,71 +85,51 @@ def to_tar_bz2(file_path, destination_path):
         tar.add(file_path, arcname=os.path.basename(file_path))
     return processed_filename
 
-
 @celery_app.task(name='proccess_file')
 def proccess_file(file_id, filename, new_format, fecha):
-    payload = message.data.decode()
-    file_id = message.attributes.get('file_id')
-    filename = message.attributes.get('filename')
-    new_format = message.attributes.get('new_format')
-    fecha = message.attributes.get('fecha')
+    UPLOAD_FOLDER = './uploads'
+    PROCESS_FOLDER = './processed'
+    filenameParts = filename.split('.')
 
-    print("Received message:")
-    print("Payload:", payload)
-    print("File ID:", file_id)
-    print("Filename:", filename)
-    print("New Format:", new_format)
-    print("Fecha:", fecha)
+    log_file_path = os.path.join(os.path.dirname(
+        os.path.abspath(__file__)), 'log_conversion.txt')
+    with open(log_file_path, 'a+') as file:
+        file.write(
+            '{} to {} - solicitud de conversion: {}\n'.format(filename, new_format, fecha))
 
-    proccess_file.delay(file_id, filename, new_format, fecha)
+    formats = {
+        'zip': to_zip,
+        'tar_gz': to_tar_gz,
+        'tar_bz2': to_tar_bz2
+    }
 
-    message.ack()
+    # Query the database for all users
+    # file = session.query(File).filter_by(id=file_id).first()
+    # print(f'found file:{file}')
+    file_path = os.path.join(UPLOAD_FOLDER, secure_filename(filename))
+    while not os.path.exists(file_path):
+        logger.warning(f"File not found: {file_path}. Waiting 0.5 seconds...")
+        time.sleep(0.5)
+    logger.info(f"File found: {file_path}")
 
-subscribe(config.GOOGLE_PUBSUB_TOPIC_NAME, proccess_file)
+    if not os.path.exists(file_path):
+        logger.error(f"File not found: {file_path}")
+        print(f"File not found: {file_path}")
+        return
 
-    # UPLOAD_FOLDER = './uploads'
-    # PROCESS_FOLDER = './processed'
-    # filenameParts = filename.split('.')
-    #
-    # log_file_path = os.path.join(os.path.dirname(
-    #     os.path.abspath(__file__)), 'log_conversion.txt')
-    # with open(log_file_path, 'a+') as file:
-    #     file.write(
-    #         '{} to {} - solicitud de conversion: {}\n'.format(filename, new_format, fecha))
-    #
-    # formats = {
-    #     'zip': to_zip,
-    #     'tar_gz': to_tar_gz,
-    #     'tar_bz2': to_tar_bz2
-    # }
-    #
-    # # Query the database for all users
-    # # file = session.query(File).filter_by(id=file_id).first()
-    # # print(f'found file:{file}')
-    # file_path = os.path.join(UPLOAD_FOLDER, secure_filename(filename))
-    # while not os.path.exists(file_path):
-    #     logger.warning(f"File not found: {file_path}. Waiting 0.5 seconds...")
-    #     time.sleep(0.5)
-    # logger.info(f"File found: {file_path}")
-    #
-    # if not os.path.exists(file_path):
-    #     logger.error(f"File not found: {file_path}")
-    #     print(f"File not found: {file_path}")
-    #     return
-    #
-    # if new_format in formats.keys():
-    #     print(f"calling {new_format}")
-    #     func = formats[new_format]
-    #     print(f"function: {func}")
-    #     processed_filename = func(file_path, os.path.join(
-    #         PROCESS_FOLDER, filenameParts[0]))
-    #     print(f"original: {os.path.join(PROCESS_FOLDER, filename)}")
-    #     print(f"destination: {processed_filename}")
-    #     file = session.query(File).filter_by(id=file_id).first()
-    #     processed_filename_parts = processed_filename.split('/')
-    #     file.processed_filename = processed_filename_parts[-1]
-    #     file.state = 'PROCESSED'
-    #     session.add(file)
-    #     session.commit()
-    # else:
-    #     print("Invalid format")
+    if new_format in formats.keys():
+        print(f"calling {new_format}")
+        func = formats[new_format]
+        print(f"function: {func}")
+        processed_filename = func(file_path, os.path.join(
+            PROCESS_FOLDER, filenameParts[0]))
+        print(f"original: {os.path.join(PROCESS_FOLDER, filename)}")
+        print(f"destination: {processed_filename}")
+        file = session.query(File).filter_by(id=file_id).first()
+        processed_filename_parts = processed_filename.split('/')
+        file.processed_filename = processed_filename_parts[-1]
+        file.state = 'PROCESSED'
+        session.add(file)
+        session.commit()
+    else:
+        print("Invalid format")
