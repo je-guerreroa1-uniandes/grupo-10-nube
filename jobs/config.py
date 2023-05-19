@@ -20,3 +20,5 @@ G10_REDIS_PORT: str = os.getenv('G10_REDIS_PORT', default='6379')
 G10_REDIS_DBNAME: str = os.getenv('G10_REDIS_DBNAME', default='0')
 
 REDIS_URI: str = f"{G10_REDIS_PREFIX}://:{G10_REDIS_PASSWORD}@{G10_REDIS_HOST}:{G10_REDIS_PORT}/{G10_REDIS_DBNAME}"
+
+GOOGLE_PUBSUB_TOPIC_NAME: str = f"projects/uniandes-grupo-10/topics/api-worker"

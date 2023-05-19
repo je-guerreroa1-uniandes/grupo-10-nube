@@ -10,6 +10,7 @@ from celery import Celery
 from werkzeug.utils import secure_filename
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+from celery_pubsub import subscribe
 from modelos import File
 import config
 
@@ -21,7 +22,18 @@ formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
 handler.setFormatter(formatter)
 logger.addHandler(handler)
 
-celery_app = Celery(__name__, broker=config.REDIS_URI)
+
+celery_app = Celery(__name__)
+celery_app.config_from_object(config)
+
+# Configure the transport
+celery_app.conf.update(
+    broker_transport_options={
+        "transport": "celery_pubsub.pubsub:Transport",
+        "project_id": "uniandes-grupo-10",
+        "subscription_id": "api-worker-sub",
+    }
+)
 
 # Configure SQLAlchemy to use the PostgreSQL database
 engine = create_engine(config.POSTGRES_URI)
@@ -53,49 +65,68 @@ def to_tar_bz2(file_path, destination_path):
 
 @celery_app.task(name='proccess_file')
 def proccess_file(file_id, filename, new_format, fecha):
-    UPLOAD_FOLDER = './uploads'
-    PROCESS_FOLDER = './processed'
-    filenameParts = filename.split('.')
+    payload = message.data.decode()
+    file_id = message.attributes.get('file_id')
+    filename = message.attributes.get('filename')
+    new_format = message.attributes.get('new_format')
+    fecha = message.attributes.get('fecha')
 
-    log_file_path = os.path.join(os.path.dirname(
-        os.path.abspath(__file__)), 'log_conversion.txt')
-    with open(log_file_path, 'a+') as file:
-        file.write(
-            '{} to {} - solicitud de conversion: {}\n'.format(filename, new_format, fecha))
+    print("Received message:")
+    print("Payload:", payload)
+    print("File ID:", file_id)
+    print("Filename:", filename)
+    print("New Format:", new_format)
+    print("Fecha:", fecha)
 
-    formats = {
-        'zip': to_zip,
-        'tar_gz': to_tar_gz,
-        'tar_bz2': to_tar_bz2
-    }
+    proccess_file.delay(file_id, filename, new_format, fecha)
 
-    # Query the database for all users
-    # file = session.query(File).filter_by(id=file_id).first()
-    # print(f'found file:{file}')
-    file_path = os.path.join(UPLOAD_FOLDER, secure_filename(filename))
-    while not os.path.exists(file_path):
-        logger.warning(f"File not found: {file_path}. Waiting 0.5 seconds...")
-        time.sleep(0.5)
-    logger.info(f"File found: {file_path}")
+    message.ack()
 
-    if not os.path.exists(file_path):
-        logger.error(f"File not found: {file_path}")
-        print(f"File not found: {file_path}")
-        return
+subscribe(config.GOOGLE_PUBSUB_TOPIC_NAME, proccess_file)
 
-    if new_format in formats.keys():
-        print(f"calling {new_format}")
-        func = formats[new_format]
-        print(f"function: {func}")
-        processed_filename = func(file_path, os.path.join(
-            PROCESS_FOLDER, filenameParts[0]))
-        print(f"original: {os.path.join(PROCESS_FOLDER, filename)}")
-        print(f"destination: {processed_filename}")
-        file = session.query(File).filter_by(id=file_id).first()
-        processed_filename_parts = processed_filename.split('/')
-        file.processed_filename = processed_filename_parts[-1]
-        file.state = 'PROCESSED'
-        session.add(file)
-        session.commit()
-    else:
-        print("Invalid format")
+    # UPLOAD_FOLDER = './uploads'
+    # PROCESS_FOLDER = './processed'
+    # filenameParts = filename.split('.')
+    #
+    # log_file_path = os.path.join(os.path.dirname(
+    #     os.path.abspath(__file__)), 'log_conversion.txt')
+    # with open(log_file_path, 'a+') as file:
+    #     file.write(
+    #         '{} to {} - solicitud de conversion: {}\n'.format(filename, new_format, fecha))
+    #
+    # formats = {
+    #     'zip': to_zip,
+    #     'tar_gz': to_tar_gz,
+    #     'tar_bz2': to_tar_bz2
+    # }
+    #
+    # # Query the database for all users
+    # # file = session.query(File).filter_by(id=file_id).first()
+    # # print(f'found file:{file}')
+    # file_path = os.path.join(UPLOAD_FOLDER, secure_filename(filename))
+    # while not os.path.exists(file_path):
+    #     logger.warning(f"File not found: {file_path}. Waiting 0.5 seconds...")
+    #     time.sleep(0.5)
+    # logger.info(f"File found: {file_path}")
+    #
+    # if not os.path.exists(file_path):
+    #     logger.error(f"File not found: {file_path}")
+    #     print(f"File not found: {file_path}")
+    #     return
+    #
+    # if new_format in formats.keys():
+    #     print(f"calling {new_format}")
+    #     func = formats[new_format]
+    #     print(f"function: {func}")
+    #     processed_filename = func(file_path, os.path.join(
+    #         PROCESS_FOLDER, filenameParts[0]))
+    #     print(f"original: {os.path.join(PROCESS_FOLDER, filename)}")
+    #     print(f"destination: {processed_filename}")
+    #     file = session.query(File).filter_by(id=file_id).first()
+    #     processed_filename_parts = processed_filename.split('/')
+    #     file.processed_filename = processed_filename_parts[-1]
+    #     file.state = 'PROCESSED'
+    #     session.add(file)
+    #     session.commit()
+    # else:
+    #     print("Invalid format")
