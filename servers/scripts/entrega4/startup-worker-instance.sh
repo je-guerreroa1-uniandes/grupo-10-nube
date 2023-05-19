@@ -13,7 +13,7 @@ chmod +x ./grupo-10-nube/servers/scripts/entrega2/setup-nfs-client.sh
 ./grupo-10-nube/servers/scripts/entrega2/setup-nfs-client.sh
 
 # start API
-chmod +x ./grupo-10-nube/docker/start-api.sh
+chmod +x ./grupo-10-nube/docker/start-jobs.sh
 cd ./grupo-10-nube/docker
 ./start-db.sh
 
@@ -36,6 +36,6 @@ WantedBy=multi-user.target
 EOF
 
 sudo systemctl daemon-reload
-sudo systemctl enable docker-compose-api.service
-sudo systemctl start docker-compose-api.service
-sudo systemctl status docker-compose-api.service
+sudo systemctl enable docker-compose-jobs.service
+sudo systemctl start docker-compose-jobs.service
+sudo systemctl status docker-compose-jobs.service

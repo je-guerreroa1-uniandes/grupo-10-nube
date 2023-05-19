@@ -30,8 +30,8 @@ celery_app.config_from_object(config)
 celery_app.conf.update(
     broker_transport_options={
         "transport": "celery_pubsub.pubsub:Transport",
-        "project_id": "uniandes-grupo-10",
-        "subscription_id": "api-worker-sub",
+        "project_id": config.GOOGLE_PUBSUB_PROJECT_ID,
+        "subscription_id": config.GOOGLE_PUBSUB_SUBSCRIPTION_ID,
     }
 )
 
