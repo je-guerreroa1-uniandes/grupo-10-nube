@@ -319,6 +319,22 @@ locals {
   ]
 }
 
+// q: How do you implement a load balancer using terraform?
+
+// a: https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_instance_group
+// a: https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_instance_group_manager
+// a: https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_instance_template
+//
+
+
+
+
+
+
+// a: https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_instance_group_manager
+// a: https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_instance_template
+
+
 resource "google_sql_database_instance" "main" {
   name             = "grupo10-database"
   database_version = "POSTGRES_14"
