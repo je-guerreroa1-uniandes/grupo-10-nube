@@ -10,10 +10,12 @@ from celery import Celery
 from werkzeug.utils import secure_filename
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from google.cloud import pubsub_v1
-from google.oauth2 import service_account
+
+from file_converter import FileConverter
 from modelos import File
 import config
+from google.cloud import pubsub_v1
+from google.oauth2 import service_account
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -23,14 +25,18 @@ formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
 handler.setFormatter(formatter)
 logger.addHandler(handler)
 
+celery_app = Celery(__name__, broker=config.REDIS_URI)
+
+# Configure SQLAlchemy to use the PostgreSQL database
+engine = create_engine(config.POSTGRES_URI)
+Session = sessionmaker(bind=engine)
+session = Session()
+
 # Path to your service account key file
 service_account_key_path = './google-json/uniandes-grupo-10-9a07a80edaf8.json'
 
 # Load the credentials from the JSON key file
 credentials = service_account.Credentials.from_service_account_file(service_account_key_path)
-
-celery_app = Celery(__name__)
-celery_app.config_from_object(config)
 
 # Set the credentials on the Pub/Sub subscriber client
 subscriber = pubsub_v1.SubscriberClient(credentials=credentials)
@@ -38,6 +44,7 @@ subscriber = pubsub_v1.SubscriberClient(credentials=credentials)
 subscription_path = subscriber.subscription_path(
     config.GOOGLE_PUBSUB_PROJECT_ID, config.GOOGLE_PUBSUB_SUBSCRIPTION_ID
 )
+
 
 def callback(message):
     payload = message.data.decode()
@@ -53,25 +60,13 @@ def callback(message):
     print("New Format:", new_format)
     print("Fecha:", fecha)
 
-    proccess_file.delay(file_id, filename, new_format, fecha)
+    # process_file_task.delay(file_id, filename, new_format, fecha)
 
     message.ack()
 
-future = subscriber.subscribe(subscription_path, callback)
 
-try:
-    future.result()
-except Exception as e:
-    print("Error occurred:", e)
-
-
-# Configure SQLAlchemy to use the PostgreSQL database
-engine = create_engine(config.POSTGRES_URI)
-Session = sessionmaker(bind=engine)
-session = Session()
-
-@celery_app.task(name='proccess_file')
-def proccess_file(file_id, filename, new_format, fecha):
+@celery_app.task(name='process_file')
+def process_file_task(file_id, filename, new_format, fecha):
     UPLOAD_FOLDER = './uploads'
     PROCESS_FOLDER = './processed'
     filenameParts = filename.split('.')
@@ -83,22 +78,21 @@ def proccess_file(file_id, filename, new_format, fecha):
             '{} to {} - solicitud de conversion: {}\n'.format(filename, new_format, fecha))
 
     formats = {
-        'zip': to_zip,
-        'tar_gz': to_tar_gz,
-        'tar_bz2': to_tar_bz2
+        'zip': FileConverter.to_zip,
+        'tar_gz': FileConverter.to_tar_gz,
+        'tar_bz2': FileConverter.to_tar_bz2
     }
 
-    # Query the database for all users
-    # file = session.query(File).filter_by(id=file_id).first()
-    # print(f'found file:{file}')
+    attempt_counter = 0
+
     file_path = os.path.join(UPLOAD_FOLDER, secure_filename(filename))
-    while not os.path.exists(file_path):
-        logger.warning(f"File not found: {file_path}. Waiting 0.5 seconds...")
+    while not os.path.exists(file_path) or attempt_counter == 10:
+        attempt_counter += 1
+        print(f"File not found: {file_path}. Waiting 0.5 seconds...")
         time.sleep(0.5)
-    logger.info(f"File found: {file_path}")
+    print(f"File found: {file_path}")
 
     if not os.path.exists(file_path):
-        logger.error(f"File not found: {file_path}")
         print(f"File not found: {file_path}")
         return
 
@@ -117,4 +111,4 @@ def proccess_file(file_id, filename, new_format, fecha):
         session.add(file)
         session.commit()
     else:
-        print("Invalid format")
+        print("invalid format")
