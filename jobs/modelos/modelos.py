@@ -11,4 +11,5 @@ class File(Base):
     processed_filename = Column(String(250))
     state = Column(String(20))
     user_id = Column(Integer)
-    datetime = Column(String(128))
+    created_at = Column(String(128))
+    processed_at = Column(String(128))

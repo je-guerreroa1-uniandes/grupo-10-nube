@@ -4,7 +4,6 @@ from marshmallow_sqlalchemy import SQLAlchemyAutoSchema
 
 db = SQLAlchemy()
 
-
 class Usuario(db.Model):
   id = db.Column(db.Integer, primary_key=True)
   username = db.Column(db.String(50))
@@ -18,7 +17,8 @@ class File(db.Model):
   processed_filename = db.Column(db.String(250))
   state = db.Column(db.String(20))
   user_id = db.Column(db.Integer)
-  datetime = db.Column(db.String(128))
+  created_at = db.Column(db.String(128))
+  updated_at = db.Column(db.String(128))
 
 class UsuarioSchema(SQLAlchemyAutoSchema):
   class Meta:

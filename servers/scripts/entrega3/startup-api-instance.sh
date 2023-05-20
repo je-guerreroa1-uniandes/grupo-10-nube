@@ -29,7 +29,8 @@ Restart=always
 User=ubuntu
 WorkingDirectory=/home/ubuntu/grupo-10-nube/docker
 ExecStart=/usr/bin/sudo /usr/bin/docker compose --file /home/ubuntu/grupo-10-nube/docker/docker-compose.api.dev.yml up -d --build --remove-orphans
-ExecStop=/usr/bin/sudo /usr/bin/docker compose down
+ExecStop=/usr/bin/sudo /usr/bin/docker compose --file /home/ubuntu/grupo-10-nube/docker/docker-compose.api.dev.yml down
+
 
 [Install]
 WantedBy=multi-user.target
