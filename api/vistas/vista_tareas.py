@@ -116,8 +116,8 @@ class VistaCreateTasks(Resource):
             'data': payload,
             'attributes': {
                 'file_id': str(file_id),
-                'filename': filename,
-                'new_format': new_format
+                'filename': str(filename),
+                'new_format': str(new_format)
             }
         }
 
