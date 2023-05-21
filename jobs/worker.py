@@ -123,6 +123,7 @@ def process_file(file_id, filename, new_format):
 
         # Delete the temporary files
         os.remove(temp_file_path)
+        os.remove(processed_filename)
 
         session.add(file)
         session.commit()
