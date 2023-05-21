@@ -107,14 +107,15 @@ def process_file(file_id, filename, new_format):
         processed_filename = func(temp_file_path, os.path.join(
             PROCESS_FOLDER, filename_parts[0]))
 
-        # Upload the processed file to Cloud Storage
-        processed_blob = bucket.blob(processed_filename)
-        processed_blob.upload_from_filename(processed_filename)
-
         print(f"Original: {file_path}")
         print(f"Destination: {processed_filename}")
 
         processed_filename_parts = processed_filename.split('/')
+        blob_name = f"general/processed/{processed_filename_parts[-1]}"
+        # Upload the processed file to Cloud Storage
+        processed_blob = bucket.blob(blob_name)
+        processed_blob.upload_from_filename(processed_filename)
+
         file.processed_filename = processed_filename_parts[-1]
         file.updated_at = datetime.utcnow()
         file.state = 'PROCESSED'
