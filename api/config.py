@@ -27,3 +27,6 @@ G10_JWT_SECRET: str = os.getenv(
 
 # Cloud storage
 G10_CLOUD_BUCKET: str = os.getenv('G10_CLOUD_BUCKET', default='uniandes-grupo-10.appspot.com')
+
+# Path to your service account key file
+G10_SERVICE_ACCOUNT_KEY_PATH = './google-json/uniandes-grupo-10-9a07a80edaf8.json'

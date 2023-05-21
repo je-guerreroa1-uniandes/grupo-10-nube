@@ -1,3 +1,4 @@
+import json
 import os
 from flask import request
 from flask_jwt_extended import jwt_required, create_access_token, get_jwt_identity
@@ -5,23 +6,28 @@ from flask_restful import Resource
 from werkzeug.utils import secure_filename
 # Celery for message broking
 from datetime import datetime
-from celery import Celery
+from google.cloud import pubsub_v1
 from modelos import db, Usuario, UsuarioSchema, File, FileSchema
 import config
 from google.cloud import storage
+from google.oauth2 import service_account
 
 file_schema = FileSchema()
 
+# Create credentials using the service account key
+credentials = service_account.Credentials.from_service_account_file(
+    config.G10_SERVICE_ACCOUNT_KEY_PATH,
+    scopes=['https://www.googleapis.com/auth/cloud-platform']
+)
+
 # Create a client instance with the specified service account key
-client = storage.Client.from_service_account_json(config.service_account_key_path)
+client = storage.Client.from_service_account_json(config.G10_SERVICE_ACCOUNT_KEY_PATH)
 
 bucket_name = config.G10_CLOUD_BUCKET
 bucket = client.get_bucket(bucket_name)
 
-celery_app = Celery(__name__, broker=config.REDIS_URI)
-@celery_app.task(name='proccess_file')
-def proccess_file(*args):
-    pass
+# Initialize Google Pub/Sub publisher client with the credentials
+publisher = pubsub_v1.PublisherClient(credentials=credentials)
 
 def allowed_file(filename):
     ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif', 'mp4'}
@@ -87,8 +93,16 @@ class VistaCreateTasks(Resource):
 
         # Call the message broker for queuing the file
         args = (new_file.id, filename, destination_format)
-        result = proccess_file.apply_async(args=args, queue='files')
-        task_id = result.id
-        print(f'New task id {task_id} file_id: {new_file.id} datetime: {datetime.utcnow()}')
+        message = {
+            'file_id': new_file.id,
+            'filename': filename,
+            'destination_format': destination_format
+        }
+        message_data = json.dumps(message).encode('utf-8')
+
+        topic_path = publisher.topic_path(config.PROJECT_ID, config.PUBSUB_TOPIC_NAME)
+        future = publisher.publish(topic_path, data=message_data)
+        message_id = future.result()
+        print(f'Published message with ID: {message_id}')
 
         return response_string, 200
