@@ -84,7 +84,7 @@ class VistaCreateTasks(Resource):
             processed_filename='',
             state='UPLOADED',
             user_id=current_user['id'],
-            datetime=datetime.utcnow()
+            created_at=datetime.utcnow()
         )
         db.session.add(new_file)
         db.session.commit()
