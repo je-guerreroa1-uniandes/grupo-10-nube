@@ -17,8 +17,8 @@ services:
       redproyecto:
         ipv4_address: 10.130.13.2
     volumes:
-      - /nfs/general/uploads:/app/uploads
-      - /nfs/general/processed:/app/processed
+      - /tmp/uploads:/app/uploads
+      - /tmp/processed:/app/processed
 #    depends_on:
 #      - 'custom-postgres'
 

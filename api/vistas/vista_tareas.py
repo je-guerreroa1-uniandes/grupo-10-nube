@@ -51,8 +51,8 @@ class VistaCreateTasks(Resource):
     @jwt_required()
     def post(self):
         current_user = get_jwt_identity()
-        UPLOAD_FOLDER = '/tmp/uploads'
-        PROCESS_FOLDER = '/tmp/processed'
+        UPLOAD_FOLDER = './uploads'
+        PROCESS_FOLDER = './processed'
         destination_format = request.form.get("to_format")
         print(f'to format -> {destination_format}')
 
