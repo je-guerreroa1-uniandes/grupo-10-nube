@@ -121,7 +121,7 @@ class VistaCreateTasks(Resource):
             }
         )
 
-        future = publisher.publish(topic_path, messages=[message])
+        future = publisher.publish(topic_path, data=message.data, **message.attributes)
 
         print(f"Published message: {future.result()}")
         return future.result()
