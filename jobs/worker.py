@@ -53,7 +53,7 @@ def callback(message):
         file_id = data['file_id']
         filename = data['filename']
         new_format = data['destination_format']
-    else
+    else:
         file_id = message.attributes.get('file_id')
         filename = message.attributes.get('filename')
         new_format = message.attributes.get('new_format')
