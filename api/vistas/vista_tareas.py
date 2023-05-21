@@ -104,7 +104,7 @@ class VistaCreateTasks(Resource):
         }
         message_data = json.dumps(message).encode('utf-8')
 
-        message_id = self.publish_message(self, message_data, new_file.id, filename, destination_format)
+        message_id = self.publish_message(message_data, new_file.id, filename, destination_format)
         print(f'Published message with ID: {message_id}')
 
         return response_string, 200
