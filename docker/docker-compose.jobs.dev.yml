@@ -31,8 +31,8 @@ services:
       redproyecto:
         ipv4_address: 10.130.13.3
     volumes:
-      - /nfs/general/uploads:/app/uploads
-      - /nfs/general/processed:/app/processed
+      - /tmp/uploads:/app/uploads
+      - /tmp/processed:/app/processed
 
 #  custom-redis:
 #    container_name: custom-redis

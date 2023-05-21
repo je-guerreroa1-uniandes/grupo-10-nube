@@ -62,8 +62,8 @@ def callback(message):
 
 
 def process_file(file_id, filename, new_format):
-    UPLOAD_FOLDER = '/tmp/uploads'
-    PROCESS_FOLDER = '/tmp/processed'
+    UPLOAD_FOLDER = './uploads'
+    PROCESS_FOLDER = './processed'
     filename_parts = filename.split('.')
 
     file = session.query(File).filter_by(id=file_id).first()
