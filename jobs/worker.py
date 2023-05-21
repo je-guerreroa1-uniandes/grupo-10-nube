@@ -2,7 +2,6 @@ import json
 import os
 import time
 import config
-import pytz
 from google.cloud import pubsub_v1
 from google.oauth2 import service_account
 from google.cloud import storage
@@ -118,15 +117,8 @@ def process_file(file_id, filename, new_format):
         processed_blob = bucket.blob(blob_name)
         processed_blob.upload_from_filename(processed_filename)
 
-        # Get the current time in UTC
-        utc_now = datetime.now(pytz.utc)
-
-        # Set the timezone to Colombia
-        colombia_timezone = pytz.timezone('America/Bogota')
-        colombia_now = utc_now.astimezone(colombia_timezone)
-
         file.processed_filename = processed_filename_parts[-1]
-        file.updated_at = colombia_now
+        file.updated_at = datetime.utcnow()
         file.state = 'PROCESSED'
 
         # Delete the temporary files

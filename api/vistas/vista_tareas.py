@@ -1,6 +1,5 @@
 import json
 import os
-import pytz
 from flask import request
 from flask_jwt_extended import jwt_required, create_access_token, get_jwt_identity
 from flask_restful import Resource
@@ -83,20 +82,13 @@ class VistaCreateTasks(Resource):
         # Assuming you have a cloud store object called "blob"
         blob.upload_from_filename(file_path)
 
-        # Get the current time in UTC
-        utc_now = datetime.now(pytz.utc)
-
-        # Set the timezone to Colombia
-        colombia_timezone = pytz.timezone('America/Bogota')
-        colombia_now = utc_now.astimezone(colombia_timezone)
-
         new_file = File(
             filename=secure_filename(file.filename),
             to_extension=destination_format,
             processed_filename='',
             state='UPLOADED',
             user_id=current_user['id'],
-            created_at=colombia_now
+            created_at=datetime.utcnow()
         )
         db.session.add(new_file)
         db.session.commit()
