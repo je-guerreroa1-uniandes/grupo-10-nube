@@ -72,12 +72,11 @@ class VistaCreateTasks(Resource):
         extension = filenameParts[-1]
 
         # Create a blob name with a unique identifier and file extension
-        blob_name = f"{current_user['id']}/{filenameParts[0]}_{datetime.utcnow().strftime('%Y%m%d%H%M%S')}.{extension}"
+        #blob_name = f"{current_user['id']}/{filenameParts[0]}_{datetime.utcnow().strftime('%Y%m%d%H%M%S')}.{extension}"
+        blob_name = f"general/uploads/{filenameParts[0]}.{extension}"
         blob = bucket.blob(blob_name)
 
         # Assuming you have a cloud store object called "blob"
-        folder_path = "general/uploads/"  # Specify the desired folder path
-        destination_path = folder_path + filename
         blob.upload_from_filename(file_path)
 
         new_file = File(
