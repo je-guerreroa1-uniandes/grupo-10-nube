@@ -88,12 +88,14 @@ def process_file(file_id, filename, new_format):
     }
 
     file_path = secure_filename(filename)
-    blob = bucket.blob(file_path)
+    blob_path = f'general/uploads/{file_path}'
+    print(f'Blob to load: {blob_path}')
+    blob = bucket.blob(blob_path)
 
     attempt_counter = 0
-    while not blob.exists() or attempt_counter == 10:
+    while not blob.exists() or attempt_counter <= 10:
         attempt_counter += 1
-        print(f"File not found: {file_path}. Waiting 0.5 seconds...")
+        print(f"File not found: {blob_path}. Waiting 0.5 seconds...")
         time.sleep(0.5)
     print(f"File found: {file_path}")
 
