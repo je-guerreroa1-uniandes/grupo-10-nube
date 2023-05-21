@@ -5,7 +5,7 @@ G10_DB_PREFIX: str = os.getenv('G10_DB_PREFIX', default='postgresql')
 G10_DB_USERNAME: str = os.getenv('G10_DB_USERNAME', default='converter_db')
 G10_DB_PASSWORD: str = os.getenv(
     'G10_DB_PASSWORD', default='ckhAMLIteFlYheRptAteapeze')
-G10_DB_HOST: str = os.getenv('G10_DB_HOST', default='10.130.13.6')
+G10_DB_HOST: str = os.getenv('G10_DB_HOST', default='10.93.240.3')
 G10_DB_PORT: str = os.getenv('G10_DB_PORT', default='5432')
 G10_DB_DBNAME: str = os.getenv('G10_DB_DBNAME', default='conversion')
 
