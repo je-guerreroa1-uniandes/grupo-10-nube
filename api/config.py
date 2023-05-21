@@ -24,3 +24,6 @@ REDIS_URI: str = f"{G10_REDIS_PREFIX}://:{G10_REDIS_PASSWORD}@{G10_REDIS_HOST}:{
 # JWT
 G10_JWT_SECRET: str = os.getenv(
     'G10_JWT_SECRET', default='frase-secreta-grupo-10-nube')
+
+# Cloud storage
+G10_CLOUD_BUCKET: str = os.getenv('G10_CLOUD_BUCKET', default='uniandes-grupo-10.appspot.com')

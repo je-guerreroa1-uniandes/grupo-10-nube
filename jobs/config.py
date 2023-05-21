@@ -24,3 +24,6 @@ REDIS_URI: str = f"{G10_REDIS_PREFIX}://:{G10_REDIS_PASSWORD}@{G10_REDIS_HOST}:{
 GOOGLE_PUBSUB_PROJECT_ID = 'uniandes-grupo-10'
 GOOGLE_PUBSUB_TOPIC_NAME = f'projects/{GOOGLE_PUBSUB_PROJECT_ID}/topics/api-worker'
 GOOGLE_PUBSUB_SUBSCRIPTION_ID = 'api-worker-sub'
+
+# Cloud storage
+G10_CLOUD_BUCKET: str = os.getenv('G10_CLOUD_BUCKET', default='uniandes-grupo-10.appspot.com')

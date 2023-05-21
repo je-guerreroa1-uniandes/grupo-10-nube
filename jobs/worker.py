@@ -3,9 +3,11 @@ import time
 import config
 from google.cloud import pubsub_v1
 from google.oauth2 import service_account
+from google.cloud import storage
 from werkzeug.utils import secure_filename
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+from datetime import datetime
 
 from file_converter import FileConverter
 from modelos import File
@@ -28,6 +30,19 @@ subscription_path = subscriber.subscription_path(
     config.GOOGLE_PUBSUB_PROJECT_ID, config.GOOGLE_PUBSUB_SUBSCRIPTION_ID
 )
 
+# Create a client instance with the specified service account key
+client = storage.Client.from_service_account_json(service_account_key_path)
+
+# Specify the bucket name
+bucket_name = config.G10_CLOUD_BUCKET
+
+bucket = client.get_bucket(bucket_name)
+
+# List the blobs in the bucket
+blobs = bucket.list_blobs()
+for blob in blobs:
+    print(blob.name)
+
 
 def callback(message):
     payload = message.data.decode()
@@ -47,16 +62,16 @@ def callback(message):
 
 
 def process_file(file_id, filename, new_format):
-    UPLOAD_FOLDER = './uploads'
-    PROCESS_FOLDER = './processed'
-    filenameParts = filename.split('.')
+    UPLOAD_FOLDER = '/tmp/uploads'
+    PROCESS_FOLDER = '/tmp/processed'
+    filename_parts = filename.split('.')
 
     file = session.query(File).filter_by(id=file_id).first()
     log_file_path = os.path.join(os.path.dirname(
         os.path.abspath(__file__)), 'log_conversion.txt')
-    with open(log_file_path, 'a+') as file:
-        file.write(
-            '{} to {} - solicitud de conversion: {}\n'.format(filename, new_format, file.created_at))
+    with open(log_file_path, 'a+') as log_file:
+        log_file.write(
+            '{} to {} - solicitud de conversion: {}\n'.format(filename, new_format, file.created_at)) #datetime.utcnow()))
 
     formats = {
         'zip': FileConverter.to_zip,
@@ -64,34 +79,45 @@ def process_file(file_id, filename, new_format):
         'tar_bz2': FileConverter.to_tar_bz2
     }
 
-    attempt_counter = 0
+    file_path = secure_filename(filename)
+    blob = bucket.blob(file_path)
 
-    file_path = os.path.join(UPLOAD_FOLDER, secure_filename(filename))
-    while not os.path.exists(file_path) or attempt_counter == 10:
-        attempt_counter += 1
-        print(f"File not found: {file_path}. Waiting 0.5 seconds...")
-        time.sleep(0.5)
-    print(f"File found: {file_path}")
-
-    if not os.path.exists(file_path):
-        print(f"File not found: {file_path}")
+    if not blob.exists():
+        print(f"Blob not found: {file_path}")
         return
 
+    # Download the file to the local temporary directory
+    temp_file_path = os.path.join(UPLOAD_FOLDER, secure_filename(filename))
+    blob.download_to_filename(temp_file_path)
+
     if new_format in formats.keys():
-        print(f"calling {new_format}")
+        print(f"Calling {new_format}")
         func = formats[new_format]
-        print(f"function: {func}")
-        processed_filename = func(file_path, os.path.join(
-            PROCESS_FOLDER, filenameParts[0]))
-        print(f"original: {os.path.join(PROCESS_FOLDER, filename)}")
-        print(f"destination: {processed_filename}")
+        print(f"Function: {func}")
+
+        # Convert the file
+        processed_filename = func(temp_file_path, os.path.join(
+            PROCESS_FOLDER, filename_parts[0]))
+
+        # Upload the processed file to Cloud Storage
+        processed_blob = bucket.blob(processed_filename)
+        processed_blob.upload_from_filename(processed_filename)
+
+        print(f"Original: {file_path}")
+        print(f"Destination: {processed_filename}")
+
         processed_filename_parts = processed_filename.split('/')
         file.processed_filename = processed_filename_parts[-1]
         file.state = 'PROCESSED'
+
+        # Delete the temporary files
+        os.remove(temp_file_path)
+        os.remove(processed_filename)
+
         session.add(file)
         session.commit()
     else:
-        print("invalid format")
+        print("Invalid format")
 
 if __name__ == "__main__":
     future = subscriber.subscribe(subscription_path, callback)
