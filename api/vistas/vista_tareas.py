@@ -112,15 +112,16 @@ class VistaCreateTasks(Resource):
     def publish_message(self, payload, file_id, filename, new_format) -> Future:
         topic_path = publisher.topic_path(config.GOOGLE_PUBSUB_PROJECT_ID, config.GOOGLE_PUBSUB_TOPIC_NAME)
 
-        message = {
-            'data': payload,
-            'attributes': {
+        message = pubsub_v1.types.PubsubMessage(
+            data=payload,
+            attributes={
                 'file_id': str(file_id),
                 'filename': str(filename),
                 'new_format': str(new_format)
             }
-        }
+        )
 
-        future = publisher.publish(topic_path, **message)
+        future = publisher.publish(topic_path, messages=[message])
+
         print(f"Published message: {future.result()}")
         return future.result()
