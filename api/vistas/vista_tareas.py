@@ -75,8 +75,11 @@ class VistaCreateTasks(Resource):
         blob_name = f"{current_user['id']}/{filenameParts[0]}_{datetime.utcnow().strftime('%Y%m%d%H%M%S')}.{extension}"
         blob = bucket.blob(blob_name)
 
+        # Assuming you have a cloud store object called "blob"
+        folder_path = "general/uploads/"  # Specify the desired folder path
+        destination_path = folder_path + filename
         # Upload the file to Google Cloud Storage
-        blob.upload_from_filename(file_path)
+        blob.upload_from_filename(file_path, destination_path)
 
         new_file = File(
             filename=secure_filename(file.filename),
