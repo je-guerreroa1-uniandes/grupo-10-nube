@@ -100,7 +100,7 @@ class VistaCreateTasks(Resource):
         }
         message_data = json.dumps(message).encode('utf-8')
 
-        topic_path = publisher.topic_path(config.PROJECT_ID, config.PUBSUB_TOPIC_NAME)
+        topic_path = publisher.topic_path(config.GOOGLE_PUBSUB_PROJECT_ID, config.GOOGLE_PUBSUB_TOPIC_NAME)
         future = publisher.publish(topic_path, data=message_data)
         message_id = future.result()
         print(f'Published message with ID: {message_id}')
