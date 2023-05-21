@@ -78,7 +78,7 @@ class VistaCreateTasks(Resource):
         # Assuming you have a cloud store object called "blob"
         folder_path = "general/uploads/"  # Specify the desired folder path
         destination_path = folder_path + filename
-        blob.upload_from_filename(destination_path)#(file_path, destination_path)
+        blob.upload_from_filename(file_path)
 
         new_file = File(
             filename=secure_filename(file.filename),
