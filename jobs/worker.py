@@ -97,6 +97,7 @@ def process_file(file_id, filename, new_format):
     # Download the file to the local temporary directory
     temp_file_path = os.path.join(UPLOAD_FOLDER, secure_filename(filename))
     blob.download_to_filename(temp_file_path)
+    print(f"Temp file path: {temp_file_path}")
 
     if new_format in formats.keys():
         print(f"Calling {new_format}")
@@ -122,7 +123,6 @@ def process_file(file_id, filename, new_format):
 
         # Delete the temporary files
         os.remove(temp_file_path)
-        os.remove(processed_filename)
 
         session.add(file)
         session.commit()
