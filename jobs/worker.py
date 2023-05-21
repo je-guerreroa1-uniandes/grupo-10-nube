@@ -1,3 +1,4 @@
+import json
 import os
 import time
 import config
@@ -46,9 +47,16 @@ for blob in blobs:
 
 def callback(message):
     payload = message.data.decode()
-    file_id = message.attributes.get('file_id')
-    filename = message.attributes.get('filename')
-    new_format = message.attributes.get('new_format')
+    if message.attributes.get('file_id') is None:
+        data = json.loads(payload)
+
+        file_id = data['file_id']
+        filename = data['filename']
+        new_format = data['destination_format']
+    else
+        file_id = message.attributes.get('file_id')
+        filename = message.attributes.get('filename')
+        new_format = message.attributes.get('new_format')
 
     print("Received message:")
     print("Payload:", payload)
@@ -71,7 +79,7 @@ def process_file(file_id, filename, new_format):
         os.path.abspath(__file__)), 'log_conversion.txt')
     with open(log_file_path, 'a+') as log_file:
         log_file.write(
-            '{} to {} - solicitud de conversion: {}\n'.format(filename, new_format, file.created_at)) #datetime.utcnow()))
+            '{} to {} - solicitud de conversion: {}\n'.format(filename, new_format, file.created_at))
 
     formats = {
         'zip': FileConverter.to_zip,
