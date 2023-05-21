@@ -12,4 +12,4 @@ class File(Base):
     state = Column(String(20))
     user_id = Column(Integer)
     created_at = Column(String(128))
-    processed_at = Column(String(128))
+    updated_at = Column(String(128))

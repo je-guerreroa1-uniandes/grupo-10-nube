@@ -116,6 +116,7 @@ def process_file(file_id, filename, new_format):
 
         processed_filename_parts = processed_filename.split('/')
         file.processed_filename = processed_filename_parts[-1]
+        file.updated_at = datetime.utcnow()
         file.state = 'PROCESSED'
 
         # Delete the temporary files
