@@ -5,6 +5,7 @@ import config
 from google.cloud import pubsub_v1
 from google.oauth2 import service_account
 from google.cloud import storage
+from google.api_core.retry import Retry
 from werkzeug.utils import secure_filename
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -87,8 +88,16 @@ def process_file(file_id, filename, new_format):
         'tar_bz2': FileConverter.to_tar_bz2
     }
 
+    # Configure the retry settings
+    retry = Retry(
+        initial=0.1,  # Initial delay in seconds
+        maximum=5,  # Maximum number of retries
+        multiplier=2,  # Exponential backoff multiplier
+        deadline=60,  # Maximum time in seconds for all retries
+    )
+
     file_path = secure_filename(filename)
-    blob = bucket.blob(file_path)
+    blob = bucket.blob(file_path, retry=retry)
 
     if not blob.exists():
         print(f"Blob not found: {file_path}")
