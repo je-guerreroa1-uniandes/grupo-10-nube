@@ -6,11 +6,12 @@ from flask_restful import Resource
 from werkzeug.utils import secure_filename
 # Celery for message broking
 from datetime import datetime
-from google.cloud import pubsub_v1
 from modelos import db, Usuario, UsuarioSchema, File, FileSchema
-import config
 from google.cloud import storage
 from google.oauth2 import service_account
+from google.cloud import pubsub_v1
+from google.cloud.pubsub_v1.publisher.futures import Future
+import config
 
 file_schema = FileSchema()
 
@@ -29,10 +30,12 @@ bucket = client.get_bucket(bucket_name)
 # Initialize Google Pub/Sub publisher client with the credentials
 publisher = pubsub_v1.PublisherClient(credentials=credentials)
 
+
 def allowed_file(filename):
     ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif', 'mp4'}
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
 
 class VistaCreateTasks(Resource):
 
@@ -42,7 +45,7 @@ class VistaCreateTasks(Resource):
         print(f'current user {current_user}')
 
         files = File.query.filter(
-            File.user_id==current_user['id']
+            File.user_id == current_user['id']
         ).all()
         return [file_schema.dump(file) for file in files]
 
@@ -72,7 +75,7 @@ class VistaCreateTasks(Resource):
         extension = filenameParts[-1]
 
         # Create a blob name with a unique identifier and file extension
-        #blob_name = f"{current_user['id']}/{filenameParts[0]}_{datetime.utcnow().strftime('%Y%m%d%H%M%S')}.{extension}"
+        # blob_name = f"{current_user['id']}/{filenameParts[0]}_{datetime.utcnow().strftime('%Y%m%d%H%M%S')}.{extension}"
         blob_name = f"general/uploads/{filenameParts[0]}.{extension}"
         blob = bucket.blob(blob_name)
 
@@ -101,9 +104,23 @@ class VistaCreateTasks(Resource):
         }
         message_data = json.dumps(message).encode('utf-8')
 
-        topic_path = publisher.topic_path(config.GOOGLE_PUBSUB_PROJECT_ID, config.GOOGLE_PUBSUB_TOPIC_NAME)
-        future = publisher.publish(topic_path, data=message_data)
-        message_id = future.result()
+        message_id = publish_message(self, message_data, new_file.id, filename, destination_format)
         print(f'Published message with ID: {message_id}')
 
         return response_string, 200
+
+    def publish_message(self, payload, file_id, filename, new_format) -> Future:
+        topic_path = publisher.topic_path(config.GOOGLE_PUBSUB_PROJECT_ID, config.GOOGLE_PUBSUB_TOPIC_NAME)
+
+        message = {
+            'data': payload,
+            'attributes': {
+                'file_id': str(file_id),
+                'filename': filename,
+                'new_format': new_format
+            }
+        }
+
+        future = publisher.publish(topic_path, **message)
+        print(f"Published message: {future.result()}")
+        return future.result()
