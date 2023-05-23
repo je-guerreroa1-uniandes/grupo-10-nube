@@ -106,6 +106,12 @@ def process_file(file_id, filename, new_format):
     # Download the file to the local temporary directory
     temp_file_path = os.path.join(UPLOAD_FOLDER, secure_filename(filename))
     blob.download_to_filename(temp_file_path)
+    attempt_counter
+    while not os.path.exists(temp_file_path) or attempt_counter <= 10:
+        attempt_counter += 1
+        print(f"File not found: {temp_file_path}. Waiting 0.5 seconds...")
+        time.sleep(0.5)
+
     print(f"Temp file path: {temp_file_path}")
 
     if new_format in formats.keys():
