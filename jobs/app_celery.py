@@ -1,29 +1,36 @@
+import logging
+import sys
+import zipfile
+import zlib
+import tarfile
 import os
 import time
 
+from celery import Celery
 from werkzeug.utils import secure_filename
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
 
-from flask import Flask
-
-from datetime import datetime
 from file_converter import FileConverter
-from modelos.flask_models import db, FileSchema, File
+from modelos import File
+import config
 from google.cloud import pubsub_v1
 from google.oauth2 import service_account
 
-import config
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+handler = logging.StreamHandler(sys.stderr)
+handler.setLevel(logging.DEBUG)
+formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+handler.setFormatter(formatter)
+logger.addHandler(handler)
 
-app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = config.POSTGRES_URI
-app.config['SQLALCHEMY_TRACK_MODIFICATION'] = False
+celery_app = Celery(__name__, broker=config.REDIS_URI)
 
-app.config['PROPAGATE_EXCEPTIONS'] = True
-
-app_context = app.app_context()  # Hacer push del contexto de la app
-app_context.push()
-
-db.init_app(app)  # Inicializacion base de datos
-db.create_all()
+# Configure SQLAlchemy to use the PostgreSQL database
+engine = create_engine(config.POSTGRES_URI)
+Session = sessionmaker(bind=engine)
+session = Session()
 
 # Path to your service account key file
 service_account_key_path = './google-json/uniandes-grupo-10-9a07a80edaf8.json'
@@ -37,8 +44,6 @@ subscriber = pubsub_v1.SubscriberClient(credentials=credentials)
 subscription_path = subscriber.subscription_path(
     config.GOOGLE_PUBSUB_PROJECT_ID, config.GOOGLE_PUBSUB_SUBSCRIPTION_ID
 )
-
-file_schema = FileSchema()
 
 
 def callback(message):
@@ -55,12 +60,13 @@ def callback(message):
     print("New Format:", new_format)
     print("Fecha:", fecha)
 
-    process_file(file_id, filename, new_format, fecha)
+    # process_file_task.delay(file_id, filename, new_format, fecha)
 
     message.ack()
 
 
-def process_file(file_id, filename, new_format, fecha):
+@celery_app.task(name='process_file')
+def process_file_task(file_id, filename, new_format, fecha):
     UPLOAD_FOLDER = './uploads'
     PROCESS_FOLDER = './processed'
     filenameParts = filename.split('.')
@@ -98,11 +104,11 @@ def process_file(file_id, filename, new_format, fecha):
             PROCESS_FOLDER, filenameParts[0]))
         print(f"original: {os.path.join(PROCESS_FOLDER, filename)}")
         print(f"destination: {processed_filename}")
-        file = File.query.filter_by(id=file_id).first()
+        file = session.query(File).filter_by(id=file_id).first()
         processed_filename_parts = processed_filename.split('/')
         file.processed_filename = processed_filename_parts[-1]
-        file.processed_at = datetime.utcnow()
         file.state = 'PROCESSED'
-        db.session.commit()
+        session.add(file)
+        session.commit()
     else:
         print("invalid format")

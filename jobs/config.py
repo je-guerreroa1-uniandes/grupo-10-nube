@@ -14,9 +14,16 @@ POSTGRES_URI: str = f"{G10_DB_PREFIX}://{G10_DB_USERNAME}:{G10_DB_PASSWORD}@{G10
 # Redis
 G10_REDIS_PREFIX: str = os.getenv('G10_REDIS_PREFIX', default='redis')
 G10_REDIS_PASSWORD: str = os.getenv(
-    'G10_REDIS_PASSWORD', default='lOGleSPirDOLEYsiceWlemPtO')
-G10_REDIS_HOST: str = os.getenv('G10_REDIS_HOST', default='10.130.13.4')
+    'G10_REDIS_PASSWORD', default='')
+G10_REDIS_HOST: str = os.getenv('G10_REDIS_HOST', default='127.0.0.1')
 G10_REDIS_PORT: str = os.getenv('G10_REDIS_PORT', default='6379')
 G10_REDIS_DBNAME: str = os.getenv('G10_REDIS_DBNAME', default='0')
 
 REDIS_URI: str = f"{G10_REDIS_PREFIX}://:{G10_REDIS_PASSWORD}@{G10_REDIS_HOST}:{G10_REDIS_PORT}/{G10_REDIS_DBNAME}"
+
+GOOGLE_PUBSUB_PROJECT_ID = 'uniandes-grupo-10'
+GOOGLE_PUBSUB_TOPIC_NAME = f'projects/{GOOGLE_PUBSUB_PROJECT_ID}/topics/api-worker'
+GOOGLE_PUBSUB_SUBSCRIPTION_ID = 'api-worker-sub'
+
+# Cloud storage
+G10_CLOUD_BUCKET: str = os.getenv('G10_CLOUD_BUCKET', default='uniandes-grupo-10.appspot.com')
