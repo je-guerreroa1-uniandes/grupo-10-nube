@@ -1,5 +1,7 @@
 import json
 import os
+import time
+
 from flask import request
 from flask_jwt_extended import jwt_required, create_access_token, get_jwt_identity
 from flask_restful import Resource
@@ -67,8 +69,22 @@ class VistaCreateTasks(Resource):
             return 'No selected file'
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
-            file_path = os.path.join(UPLOAD_FOLDER, filename)
+            filenameParts = file.filename.split('.')
+            new_filename = f"{filenameParts[0]}_{datetime.utcnow().strftime('%Y%m%d%H%M%S')}.{filenameParts[-1]}"
+            file_path = os.path.join(UPLOAD_FOLDER, new_filename)
             file.save(file_path)
+
+        attempt_counter = 0
+        max_attempts = 20
+
+        while attempt_counter < max_attempts and not os.path.exists(file_path):
+            attempt_counter += 1
+            print(f"Attempt {attempt_counter}: File not found. Waiting 0.5 seconds...")
+            time.sleep(0.5)
+
+        if attempt_counter >= max_attempts:
+            print("Maximum attempts reached. File not found.")
+            # Perform any necessary actions when the maximum attempts are reached
 
         filenameParts = file.filename.split('.')
         filename = file.filename
@@ -76,14 +92,23 @@ class VistaCreateTasks(Resource):
 
         # Create a blob name with a unique identifier and file extension
         # blob_name = f"{current_user['id']}/{filenameParts[0]}_{datetime.utcnow().strftime('%Y%m%d%H%M%S')}.{extension}"
-        blob_name = f"general/uploads/{filenameParts[0]}.{extension}"
+        new_file_name = f"{filenameParts[0]}_{datetime.utcnow().strftime('%Y%m%d%H%M%S')}.{extension}"
+        blob_name = f"general/uploads/{new_file_name}"
         blob = bucket.blob(blob_name)
 
         # Assuming you have a cloud store object called "blob"
         blob.upload_from_filename(file_path)
 
+        attempt_counter = 0
+        max_attempts = 20
+
+        while not blob.exists() and attempt_counter <= max_attempts:
+            attempt_counter += 1
+            print(f"File not found on blob: {blob_name}. Waiting 0.5 seconds...")
+            time.sleep(0.5)
+
         new_file = File(
-            filename=secure_filename(file.filename),
+            filename=secure_filename(new_file_name),
             to_extension=destination_format,
             processed_filename='',
             state='UPLOADED',
@@ -96,16 +121,24 @@ class VistaCreateTasks(Resource):
         response_string = {'mensaje': 'tarea creada exitosamente', 'file': file_schema.dump(new_file)}
 
         # Call the message broker for queuing the file
-        args = (new_file.id, filename, destination_format)
         message = {
             'file_id': new_file.id,
-            'filename': filename,
+            'filename': new_file_name,
             'destination_format': destination_format
         }
         message_data = json.dumps(message).encode('utf-8')
 
-        message_id = self.publish_message(message_data, new_file.id, filename, destination_format)
+        message_id = self.publish_message(message_data, new_file.id, new_file_name, destination_format)
         print(f'Published message with ID: {message_id}')
+
+        attempt_counter = 0
+        max_attempts = 40
+        while attempt_counter < max_attempts and not os.path.exists(file_path):
+            attempt_counter += 1
+            print(f"Attempt {attempt_counter}: File not found. Waiting 0.5 seconds...")
+            time.sleep(0.5)
+
+        os.remove(file_path)
 
         return response_string, 200
 

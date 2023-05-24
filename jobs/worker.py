@@ -2,6 +2,7 @@ import json
 import os
 import time
 import config
+import threading
 from google.cloud import pubsub_v1
 from google.oauth2 import service_account
 from google.cloud import storage
@@ -44,29 +45,33 @@ blobs = bucket.list_blobs()
 for blob in blobs:
     print(blob.name)
 
+# Create a lock object
+message_lock = threading.Lock()
+
 
 def callback(message):
-    payload = message.data.decode()
-    if message.attributes.get('file_id') is None:
-        data = json.loads(payload)
+    with message_lock:
+        payload = message.data.decode()
+        if message.attributes.get('file_id') is None:
+            data = json.loads(payload)
 
-        file_id = data['file_id']
-        filename = data['filename']
-        new_format = data['destination_format']
-    else:
-        file_id = message.attributes.get('file_id')
-        filename = message.attributes.get('filename')
-        new_format = message.attributes.get('new_format')
+            file_id = data['file_id']
+            filename = data['filename']
+            new_format = data['destination_format']
+        else:
+            file_id = message.attributes.get('file_id')
+            filename = message.attributes.get('filename')
+            new_format = message.attributes.get('new_format')
 
-    print("Received message:")
-    print("Payload:", payload)
-    print("File ID:", file_id)
-    print("Filename:", filename)
-    print("New Format:", new_format)
+        print("Received message:")
+        print("Payload:", payload)
+        print("File ID:", file_id)
+        print("Filename:", filename)
+        print("New Format:", new_format)
 
-    process_file(file_id, filename, new_format)
+        process_file(file_id, filename, new_format)
 
-    message.ack()
+        message.ack()
 
 
 def process_file(file_id, filename, new_format):
@@ -80,6 +85,8 @@ def process_file(file_id, filename, new_format):
     with open(log_file_path, 'a+') as log_file:
         log_file.write(
             '{} to {} - solicitud de conversion: {}\n'.format(filename, new_format, file.created_at))
+    if file.state == 'PROCESSED':
+        return
 
     formats = {
         'zip': FileConverter.to_zip,
@@ -106,6 +113,12 @@ def process_file(file_id, filename, new_format):
     # Download the file to the local temporary directory
     temp_file_path = os.path.join(UPLOAD_FOLDER, secure_filename(filename))
     blob.download_to_filename(temp_file_path)
+    attempt_counter
+    while not os.path.exists(temp_file_path) or attempt_counter <= 10:
+        attempt_counter += 1
+        print(f"File not found: {temp_file_path}. Waiting 0.5 seconds...")
+        time.sleep(0.5)
+
     print(f"Temp file path: {temp_file_path}")
 
     if new_format in formats.keys():
@@ -116,6 +129,13 @@ def process_file(file_id, filename, new_format):
         # Convert the file
         processed_filename = func(temp_file_path, os.path.join(
             PROCESS_FOLDER, filename_parts[0]))
+
+        while not os.path.exists(processed_filename) or attempt_counter <= 10:
+            attempt_counter += 1
+            print(f"File not found: {processed_filename}. Waiting 0.5 seconds...")
+            time.sleep(0.5)
+
+        print(f"Temp file path: {temp_file_path}")
 
         print(f"Original: {file_path}")
         print(f"Destination: {processed_filename}")
