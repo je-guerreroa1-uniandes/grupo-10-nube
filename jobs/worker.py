@@ -80,6 +80,8 @@ def process_file(file_id, filename, new_format):
     with open(log_file_path, 'a+') as log_file:
         log_file.write(
             '{} to {} - solicitud de conversion: {}\n'.format(filename, new_format, file.created_at))
+    if file.state == 'PROCESSED':
+        return
 
     formats = {
         'zip': FileConverter.to_zip,
