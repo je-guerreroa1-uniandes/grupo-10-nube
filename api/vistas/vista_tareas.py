@@ -131,6 +131,13 @@ class VistaCreateTasks(Resource):
         message_id = self.publish_message(message_data, new_file.id, new_file_name, destination_format)
         print(f'Published message with ID: {message_id}')
 
+        attempt_counter = 0
+        max_attempts = 20
+        while attempt_counter < max_attempts and not os.path.exists(file_path):
+            attempt_counter += 1
+            print(f"Attempt {attempt_counter}: File not found. Waiting 0.5 seconds...")
+            time.sleep(0.5)
+            
         os.remove(file_path)
 
         return response_string, 200
