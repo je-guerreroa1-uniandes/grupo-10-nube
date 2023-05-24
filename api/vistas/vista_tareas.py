@@ -132,7 +132,7 @@ class VistaCreateTasks(Resource):
         print(f'Published message with ID: {message_id}')
 
         attempt_counter = 0
-        max_attempts = 30
+        max_attempts = 40
         while attempt_counter < max_attempts and not os.path.exists(file_path):
             attempt_counter += 1
             print(f"Attempt {attempt_counter}: File not found. Waiting 0.5 seconds...")
