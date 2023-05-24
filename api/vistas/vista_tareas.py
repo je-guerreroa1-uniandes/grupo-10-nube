@@ -1,5 +1,7 @@
 import json
 import os
+import time
+
 from flask import request
 from flask_jwt_extended import jwt_required, create_access_token, get_jwt_identity
 from flask_restful import Resource
@@ -70,6 +72,18 @@ class VistaCreateTasks(Resource):
             file_path = os.path.join(UPLOAD_FOLDER, filename)
             file.save(file_path)
 
+        attempt_counter = 0
+        max_attempts = 20
+
+        while attempt_counter < max_attempts and not os.path.exists(file_path):
+            attempt_counter += 1
+            print(f"Attempt {attempt_counter}: File not found. Waiting 0.5 seconds...")
+            time.sleep(0.5)
+
+        if attempt_counter >= max_attempts:
+            print("Maximum attempts reached. File not found.")
+            # Perform any necessary actions when the maximum attempts are reached
+
         filenameParts = file.filename.split('.')
         filename = file.filename
         extension = filenameParts[-1]
@@ -82,6 +96,14 @@ class VistaCreateTasks(Resource):
 
         # Assuming you have a cloud store object called "blob"
         blob.upload_from_filename(file_path)
+
+        attempt_counter = 0
+        max_attempts = 20
+
+        while not blob.exists() and attempt_counter <= max_attempts:
+            attempt_counter += 1
+            print(f"File not found on blob: {blob_name}. Waiting 0.5 seconds...")
+            time.sleep(0.5)
 
         new_file = File(
             filename=secure_filename(new_file_name),
