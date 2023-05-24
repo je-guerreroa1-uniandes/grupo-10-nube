@@ -2,6 +2,7 @@ import json
 import os
 import time
 import config
+import threading
 from google.cloud import pubsub_v1
 from google.oauth2 import service_account
 from google.cloud import storage
@@ -44,29 +45,33 @@ blobs = bucket.list_blobs()
 for blob in blobs:
     print(blob.name)
 
+# Create a lock object
+message_lock = threading.Lock()
+
 
 def callback(message):
-    payload = message.data.decode()
-    if message.attributes.get('file_id') is None:
-        data = json.loads(payload)
+    with message_lock:
+        payload = message.data.decode()
+        if message.attributes.get('file_id') is None:
+            data = json.loads(payload)
 
-        file_id = data['file_id']
-        filename = data['filename']
-        new_format = data['destination_format']
-    else:
-        file_id = message.attributes.get('file_id')
-        filename = message.attributes.get('filename')
-        new_format = message.attributes.get('new_format')
+            file_id = data['file_id']
+            filename = data['filename']
+            new_format = data['destination_format']
+        else:
+            file_id = message.attributes.get('file_id')
+            filename = message.attributes.get('filename')
+            new_format = message.attributes.get('new_format')
 
-    print("Received message:")
-    print("Payload:", payload)
-    print("File ID:", file_id)
-    print("Filename:", filename)
-    print("New Format:", new_format)
+        print("Received message:")
+        print("Payload:", payload)
+        print("File ID:", file_id)
+        print("Filename:", filename)
+        print("New Format:", new_format)
 
-    process_file(file_id, filename, new_format)
+        process_file(file_id, filename, new_format)
 
-    message.ack()
+        message.ack()
 
 
 def process_file(file_id, filename, new_format):
