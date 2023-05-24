@@ -69,7 +69,9 @@ class VistaCreateTasks(Resource):
             return 'No selected file'
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
-            file_path = os.path.join(UPLOAD_FOLDER, filename)
+            filenameParts = file.filename.split('.')
+            new_filename = f"{filenameParts[0]}_{datetime.utcnow().strftime('%Y%m%d%H%M%S')}.{filenameParts[-1]}"
+            file_path = os.path.join(UPLOAD_FOLDER, new_filename)
             file.save(file_path)
 
         attempt_counter = 0
