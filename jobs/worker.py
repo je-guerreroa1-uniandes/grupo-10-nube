@@ -123,6 +123,13 @@ def process_file(file_id, filename, new_format):
         processed_filename = func(temp_file_path, os.path.join(
             PROCESS_FOLDER, filename_parts[0]))
 
+        while not os.path.exists(processed_filename) or attempt_counter <= 10:
+            attempt_counter += 1
+            print(f"File not found: {processed_filename}. Waiting 0.5 seconds...")
+            time.sleep(0.5)
+
+        print(f"Temp file path: {temp_file_path}")
+
         print(f"Original: {file_path}")
         print(f"Destination: {processed_filename}")
 
