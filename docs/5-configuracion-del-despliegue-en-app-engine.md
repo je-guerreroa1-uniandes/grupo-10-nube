@@ -1,5 +1,7 @@
 # Memorias de la configuración del despliegue PaaS en GCloud (Quinta entrega)
 
+> Para ejecutar este laboratorio se debe haber preparado el entorno según las instrucciones del numeral **I** del archivo [CONTRIBUTING.md](../CONTRIBUTING.md), especificamente los puntos **1, 2.a y 2.b**
+
 ## Selecionar el entorno de app engine a utilizar
 
 Nuestra aplicacion fue desarrollada para ejecutarse usando python 3.9.6. Esto nos permite usar app engine standar. Ese entorno nos resulta mas atractivo porque nos ofrece las siguientes ventajas:
