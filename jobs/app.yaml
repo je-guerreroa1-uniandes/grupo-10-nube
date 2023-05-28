@@ -11,12 +11,12 @@ basic_scaling:
   idle_timeout: 10m
 
 env_variables: # Este bloque se usa para definir variables de entorno.
-  G10_DB_PREFIX: ""
-  G10_DB_USERNAME: ""
-  G10_DB_PASSWORD: ""
-  G10_DB_HOST: ""
-  G10_DB_PORT: ""
-  G10_DB_DBNAME: ""
+  G10_DB_PREFIX: "postgresql"
+  G10_DB_USERNAME: "converter_db"
+  G10_DB_PASSWORD: "ckhAMLIteFlYheRptAteapeze"
+  G10_DB_HOST: "10.93.240.3"
+  G10_DB_PORT: "5432"
+  G10_DB_DBNAME: "conversion"
 
 handlers:
 - url: /.*
@@ -24,4 +24,4 @@ handlers:
   redirect_http_response_code: 301
   script: auto
 
-entrypoint: gunicorn -b :$PORT -w 4 wsgi:app
+entrypoint: python3 -m worker.py
