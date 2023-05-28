@@ -1,5 +1,7 @@
 # Contribuir al desarrollo del proyecto
 
+> El paso I es fundamental para la contribución al proyecto. En este se prepara la cuenta de Google Cloud Platform con la que se trabajara todos los laboratorios.
+
 ## I. Preparamos el entorno para ejecutar la automatización de la infraestructura
 
     Nota: Para ejecutar la automatización de la infraestructura se requiere tener instalado Terraform, bash y docker.
@@ -20,24 +22,37 @@
 - 2. Ir a VPC Network > External IP addresses
 - 3. Reservar 4 IP estáticas con los nombres: api, nfs, jobs & locust
 
-#### 2.b. A través de la línea de comandos
+#### 2.b. Logear la máquina de trabajo ante google cloud a través de la línea de comandos
 
 - 1. Instalar el SDK de Google Cloud Platform o usar el Cloud Shell
 - 2. Ejecutar el siguiente comando:
 
 ```bash
+# Instalar el SDK de Google Cloud Platform, en un Ubuntu usando snap
+snap install google-cloud-cli --classic
+
 # Si instalo el SDK de Google Cloud Platform
 # Autenticarse con la llave de la cuenta de servicio
 gcloud auth activate-service-account --key-file=<ruta-llave-privada>
 
+# Revisa las cuentas de servicio activas
+gcloud auth list
+
+# Asociar la cuenta de servicio activa con el proyecto
+gcloud config set project PROJECT_ID
+```
+
+#### 2.c. Crear IPs staticas publicas para las instancias a través de la línea de comandos
+
+```bash
 # Reservar las IP estáticas
-gcloud compute addresses create api --project=<id-proyecto> --description=la\ descripción --network-tier=STANDARD --region=us-central1
+gcloud compute addresses create api --project=<id-proyecto> --description=el\ API\ Rest --network-tier=STANDARD --region=us-central1
 
-gcloud compute addresses create nfs --project=<id-proyecto> --description=la\ descripción --network-tier=STANDARD --region=us-central1
+gcloud compute addresses create nfs --project=<id-proyecto> --description=el\ sistema\ de\ archivos\ cache\ y\ db --network-tier=STANDARD --region=us-central1
 
-gcloud compute addresses create jobs --project=<id-proyecto> --description=la\ descripción --network-tier=STANDARD --region=us-central1
+gcloud compute addresses create jobs --project=<id-proyecto> --description=el\ worker --network-tier=STANDARD --region=us-central1
 
-gcloud compute addresses create locust --project=<id-proyecto> --description=la\ descripción --network-tier=STANDARD --region=us-central1
+gcloud compute addresses create locust --project=<id-proyecto> --description=las\ pruebas\ de\ carga --network-tier=STANDARD --region=us-central1
 ```
 
 ### 3. Obtener el ID del proyecto y dejarlo en la configuración de Terraform
@@ -51,15 +66,18 @@ gcloud compute addresses create locust --project=<id-proyecto> --description=la\
 project = "<id-proyecto>"
 ```
 
-### 4. Preparar un token de autenticación para leer del registro de los contenedores ghcr.io
+### 4. ~~Preparar un token de autenticación para leer del registro de los contenedores ghcr.io~~
 
-- 1. Ingresar a la configuración de la cuenta de GitHub (settings/profile/developer settings)
-- 2. Ir a Personal access tokens
-- 3. Crear un nuevo token con permisos de `read:packages`
-- 4. Copiar el token
-- 5. Dejar el token en un archivo llamado `github-token.txt` en la ruta: `./servers/secure/github-token.txt`, que tenga este formato:
+> Este paso no es necesario, ya que se cambio la visibilidad del repositorio a publico.
+
+- 1. ~~Ingresar a la configuración de la cuenta de GitHub (settings/profile/developer settings)~~
+- 2. ~~Ir a Personal access tokens~~
+- 3. ~~Crear un nuevo token con permisos de `read:packages`~~
+- 4. ~~Copiar el token~~
+- 5. ~~Dejar el token en un archivo llamado `github-token.txt` en la ruta: `./servers/secure/github-token.txt`, que tenga este formato:~~
 
 ```bash
+# ¡¡¡ YA NO ES NECESARIO !!!
 # Estas lineas se correran a mano al momento de ejecutar el script de bash
 # y entara a una maquina para configurarla.
 export CR_PAT=<token>
@@ -100,6 +118,6 @@ En la carpeta `./servers/scripts/entrega2` ejecutar el script `./main.sh`.
 ## III. Destruimos la infraestructura (Para no generar costos innecesarios)
 
 - 1. En la carpeta `./servers/terraform/gcloud/entrega2` ejecutar el script `./main.sh`. En este caso cuando pase por la instrucción `terraform destroy` se debe ingresar `yes` para confirmar la destrucción de la infraestructura.
-- 2. Manualmente eliminar las IP estáticas reservadas en el paso 2. del apartado I. 
+- 2. Manualmente eliminar las IP estáticas reservadas en el paso 2. del apartado I.
 - 3. Manualmente eliminar el proyecto creado en el paso 1. del apartado I. (Opcional)
 - 4. Manualmente eliminar la cuenta de servicio creada en el paso 4. del apartado I. (Opcional)

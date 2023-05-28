@@ -15,7 +15,7 @@ import config
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = config.POSTGRES_URI
-app.config['SQLALCHEMY_TRACK_MODIFICATION'] = False
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 app.config['PROPAGATE_EXCEPTIONS'] = True
 
@@ -106,3 +106,10 @@ def process_file(file_id, filename, new_format, fecha):
         db.session.commit()
     else:
         print("invalid format")
+
+@app.route("/")
+def hello():
+    return "<h1 style='color:blue'>¡Hola JOBS!</h1>"
+
+if __name__ == "__main__":
+    app.run(host='127.0.0.1', port=config.PORT, debug=True)

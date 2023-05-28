@@ -14,14 +14,14 @@ source .venv/bin/activate
 # Trabajar (requiere: Activar el entorno)
 # Instala las dependencias en el entorno
 pip3 install -r requirements.txt
-# pip install gunicorn
+# pip3 install gunicorn
 # pip3 freeze > requirements.txt
 
 # Ejecuta la aplicación
 flask run
 
 # Ejectuar la aplicación con gunicorn
-gunicorn -b :4444 -w 4 wsgi:app
+gunicorn -b :5555 -w 4 wsgi:app
 
 # Desactivar el entorno (requiere: Activar el entorno)
 deactivate
