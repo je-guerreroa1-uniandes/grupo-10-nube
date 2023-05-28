@@ -37,6 +37,9 @@ gcloud auth activate-service-account --key-file=<ruta-llave-privada>
 
 # Revisa las cuentas de servicio activas
 gcloud auth list
+
+# Asociar la cuenta de servicio activa con el proyecto
+gcloud config set project PROJECT_ID
 ```
 
 #### 2.c. Crear IPs staticas publicas para las instancias a través de la línea de comandos
