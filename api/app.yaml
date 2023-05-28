@@ -16,7 +16,7 @@ env_variables: # Este bloque se usa para definir variables de entorno.
   G10_DB_PREFIX: "postgresql"
   G10_DB_USERNAME: "converter_db"
   G10_DB_PASSWORD: "ckhAMLIteFlYheRptAteapeze"
-  G10_DB_HOST: "10.93.240.3"
+  G10_DB_HOST: "34.71.6.228"
   G10_DB_PORT: "5432"
   G10_DB_DBNAME: "conversion"
 
@@ -26,4 +26,5 @@ handlers:
   redirect_http_response_code: 301
   script: auto
 
-entrypoint: gunicorn -b :$PORT -w 4 wsgi:app
+#entrypoint: gunicorn -b :$PORT -w 4 wsgi:app
+entrypoint: flask run
