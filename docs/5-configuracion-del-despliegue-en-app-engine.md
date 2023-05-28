@@ -10,7 +10,7 @@ Nuestra aplicacion fue desarrollada para ejecutarse usando python 3.9.6. Esto no
 - Tiempo de despliegue de la aplicación en segundos.
 - Parches de seguridad automáticos.
 - Acceso a cloud storage y memorystore.
-- Ideal para cargas de trabajo espontaneas que requieran escalara inmediatamente.
+- Ideal para cargas de trabajo espontaneas que requieran escalar inmediatamente.
 
 ## Diseñar el entorno de ejecución con el archivo app.yaml
 
@@ -23,7 +23,7 @@ runtime: python39
 
 service: api # This service name is used in the URL for the service. {'api', 'jobs'}
 
-instance_class: B2
+instance_class: B2 # (default instance class) Number of workers=4, Memory Limit=768MB, CPU Limit=1.2GHz 
 
 basic_scaling:
   max_instances: 5
@@ -40,7 +40,7 @@ handlers:
     http_headers:
       Access-Control-Allow-Origin: "*"
 
-entrypoint: gunicorn -b :$PORT wsgi:app
+entrypoint: gunicorn -b :$PORT -w 4 wsgi:app
 ```
 
 ## Ajustar las aplicaciones para que corran un webserver sobre el puerto $PORT (default 5000)
@@ -74,6 +74,9 @@ Se siguio el siguiente turorial para desplegar un app en Gunicorn
 Si se preparo el entorno y se cuenta con la utilidad de gcloud instalada, se puede desplegar la aplicación con el siguiente comando:
 
 ```bash
-# En la carpeta ./api y ./jobs
+# Desplegar, en la carpeta ./api y ./jobs
 gcloud app deploy
+
+# Ver el servicio desplegado
+gcloud app browse
 ```
