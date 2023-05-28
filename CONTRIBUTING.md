@@ -22,24 +22,34 @@
 - 2. Ir a VPC Network > External IP addresses
 - 3. Reservar 4 IP estáticas con los nombres: api, nfs, jobs & locust
 
-#### 2.b. A través de la línea de comandos
+#### 2.b. Logear la máquina de trabajo ante google cloud a través de la línea de comandos
 
 - 1. Instalar el SDK de Google Cloud Platform o usar el Cloud Shell
 - 2. Ejecutar el siguiente comando:
 
 ```bash
+# Instalar el SDK de Google Cloud Platform, en un Ubuntu usando snap
+snap install google-cloud-cli --classic
+
 # Si instalo el SDK de Google Cloud Platform
 # Autenticarse con la llave de la cuenta de servicio
 gcloud auth activate-service-account --key-file=<ruta-llave-privada>
 
+# Revisa las cuentas de servicio activas
+gcloud auth list
+```
+
+#### 2.c. Crear IPs staticas publicas para las instancias a través de la línea de comandos
+
+```bash
 # Reservar las IP estáticas
-gcloud compute addresses create api --project=<id-proyecto> --description=la\ descripción --network-tier=STANDARD --region=us-central1
+gcloud compute addresses create api --project=<id-proyecto> --description=el\ API\ Rest --network-tier=STANDARD --region=us-central1
 
-gcloud compute addresses create nfs --project=<id-proyecto> --description=la\ descripción --network-tier=STANDARD --region=us-central1
+gcloud compute addresses create nfs --project=<id-proyecto> --description=el\ sistema\ de\ archivos\ cache\ y\ db --network-tier=STANDARD --region=us-central1
 
-gcloud compute addresses create jobs --project=<id-proyecto> --description=la\ descripción --network-tier=STANDARD --region=us-central1
+gcloud compute addresses create jobs --project=<id-proyecto> --description=el\ worker --network-tier=STANDARD --region=us-central1
 
-gcloud compute addresses create locust --project=<id-proyecto> --description=la\ descripción --network-tier=STANDARD --region=us-central1
+gcloud compute addresses create locust --project=<id-proyecto> --description=las\ pruebas\ de\ carga --network-tier=STANDARD --region=us-central1
 ```
 
 ### 3. Obtener el ID del proyecto y dejarlo en la configuración de Terraform

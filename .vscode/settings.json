@@ -1,18 +1,23 @@
 {
-  "workbench.iconTheme": "material-icon-theme",
+  "files.watcherExclude": {
+    "**/.git/objects/**": true,
+    "**/.git/subtree-cache/**": true,
+    "**/.venv/*/**": true
+  },
+  "[hcl]": {
+    "editor.defaultFormatter": "hashicorp.terraform",
+    "editor.formatOnSave": true,
+    "editor.formatOnPaste": true,
+  },
   "[terraform]": {
     "editor.defaultFormatter": "hashicorp.terraform",
     "editor.formatOnSave": true,
     "editor.formatOnPaste": true,
   },
-  "[hcl]": {
-      "editor.defaultFormatter": "hashicorp.terraform",
-      "editor.formatOnSave": true,
-      "editor.formatOnPaste": true,
-  },
   "[terraform-vars]": {
     "editor.defaultFormatter": "hashicorp.terraform",
     "editor.formatOnSave": true,
-      "editor.formatOnPaste": true,
-  }
+    "editor.formatOnPaste": true,
+  },
+  "workbench.iconTheme": "material-icon-theme"
 }
