@@ -43,3 +43,10 @@ api.add_resource(VistaGetTask, '/api/tasks/<task_id>')
 api.add_resource(VistaFile, '/api/files/<filename>')
 
 jwt = JWTManager(app)
+
+@app.route("/")
+def hello():
+    return "<h1 style='color:blue'>¡Hola API!</h1>"
+
+if __name__ == "__main__":
+    app.run(host='127.0.0.1', port=config.PORT, debug=True)

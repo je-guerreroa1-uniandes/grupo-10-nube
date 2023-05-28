@@ -1,4 +1,4 @@
-# Memorias de la configuración del ambiente productivo
+# Memorias de la configuración de la instancia de AWS (Primera entrega)
 
 ## 1) Usando la interfaz web se creo una instancia que corre Ubuntu 22.04 (1Gb Ram, 1vCpu)
 

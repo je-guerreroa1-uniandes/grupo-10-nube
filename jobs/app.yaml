@@ -1,0 +1,22 @@
+runtime: python39
+
+service: jobs # This service name is used in the URL for the service. {'api', 'jobs'}
+
+instance_class: B2
+
+basic_scaling:
+  max_instances: 5
+  idle_timeout: 10m
+
+#env_variables: # Este bloque se usa para definir variables de entorno.
+#  BUCKET_NAME: "example-gcs-bucket"
+
+handlers:
+- url: /.*
+  secure: always # OJO: Este puede que toque comentarlo
+  redirect_http_response_code: 301
+  script: auto
+  http_headers:
+    Access-Control-Allow-Origin: '*'
+
+entrypoint: gunicorn -b :$PORT wsgi:app

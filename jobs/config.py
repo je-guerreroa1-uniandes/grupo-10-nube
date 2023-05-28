@@ -1,5 +1,8 @@
 import os
 
+# Flask
+PORT: str = os.getenv('PORT', default='5000')
+
 # Database (PostgreSQL)
 G10_DB_PREFIX: str = os.getenv('G10_DB_PREFIX', default='postgresql')
 G10_DB_USERNAME: str = os.getenv('G10_DB_USERNAME', default='converter_db')
