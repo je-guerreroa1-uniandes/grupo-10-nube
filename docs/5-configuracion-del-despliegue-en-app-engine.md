@@ -41,8 +41,6 @@ handlers:
     secure: always
     redirect_http_response_code: 301
     script: auto
-    http_headers:
-      Access-Control-Allow-Origin: "*"
 
 entrypoint: gunicorn -b :$PORT -w 4 wsgi:app
 ```

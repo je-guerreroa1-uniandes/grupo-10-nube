@@ -10,8 +10,13 @@ basic_scaling:
   max_instances: 5
   idle_timeout: 10m
 
-#env_variables: # Este bloque se usa para definir variables de entorno.
-#  BUCKET_NAME: "example-gcs-bucket"
+env_variables: # Este bloque se usa para definir variables de entorno.
+  G10_DB_PREFIX: ""
+  G10_DB_USERNAME: ""
+  G10_DB_PASSWORD: ""
+  G10_DB_HOST: ""
+  G10_DB_PORT: ""
+  G10_DB_DBNAME: ""
 
 handlers:
 - url: /.*
