@@ -2,7 +2,7 @@
 # Python 3.10 and 3.11 run on Ubuntu 22.04
 runtime: python39
 
-service: jobs # This service name is used in the URL for the service. {'api', 'jobs'}
+service: jobs # This service name is used in the URL for the service. {'default', 'jobs'}
 
 instance_class: B2 # (default instance class) Number of workers=4, Memory Limit=768MB, CPU Limit=1.2GHz 
 
@@ -18,7 +18,5 @@ handlers:
   secure: always # OJO: Este puede que toque comentarlo
   redirect_http_response_code: 301
   script: auto
-  http_headers:
-    Access-Control-Allow-Origin: '*'
 
 entrypoint: gunicorn -b :$PORT -w 4 wsgi:app

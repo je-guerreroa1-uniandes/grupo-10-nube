@@ -12,7 +12,7 @@ import config
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = config.POSTGRES_URI
-app.config['SQLALCHEMY_TRACK_MODIFICATION'] = False
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 app.config['JWT_SECRET_KEY'] = config.G10_JWT_SECRET
 app.config['PROPAGATE_EXCEPTIONS'] = True
@@ -27,6 +27,7 @@ db.create_all()
 
 api = Api(app)
 
+api.add_resource(VistaHealthCheck, '/')
 api.add_resource(VistaHealthCheck, '/api')
 
 # User management
@@ -43,10 +44,6 @@ api.add_resource(VistaGetTask, '/api/tasks/<task_id>')
 api.add_resource(VistaFile, '/api/files/<filename>')
 
 jwt = JWTManager(app)
-
-@app.route("/")
-def hello():
-    return "<h1 style='color:blue'>¡Hola API!</h1>"
 
 if __name__ == "__main__":
     app.run(host='127.0.0.1', port=config.PORT, debug=True)

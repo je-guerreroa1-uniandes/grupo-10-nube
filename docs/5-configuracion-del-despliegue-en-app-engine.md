@@ -1,6 +1,8 @@
 # Memorias de la configuración del despliegue PaaS en GCloud (Quinta entrega)
 
-> Para ejecutar este laboratorio se debe haber preparado el entorno según las instrucciones del numeral **I** del archivo [CONTRIBUTING.md](../CONTRIBUTING.md), especificamente los puntos **1, 2.a y 2.b**
+> Para ejecutar este laboratorio se debe haber preparado el entorno según las instrucciones del numeral **I** del archivo [CONTRIBUTING.md](../CONTRIBUTING.md), especificamente los puntos **1, 2.a y 2.b**.
+
+> Otra consideracion fue que se necesito un nivel de permisos de propietario para poder desplegar la aplicación en app engine. Para editar los permisos de un usuario, se debe ir a la consola de IAM y administración > IAM y agregar el rol de propietario al usuario. [IAM Admin](https://console.cloud.google.com/iam-admin)
 
 ## Selecionar el entorno de app engine a utilizar
 
@@ -84,4 +86,8 @@ gcloud app deploy
 
 # Ver el servicio desplegado
 gcloud app browse
+
+# Ver los logs del servicio desplegado
+gcloud app logs tail -s default # este es el api
+gcloud app logs tail -s jobs
 ```
