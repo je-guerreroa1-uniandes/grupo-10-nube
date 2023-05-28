@@ -74,6 +74,9 @@ Se siguio el siguiente turorial para desplegar un app en Gunicorn
 Si se preparo el entorno y se cuenta con la utilidad de gcloud instalada, se puede desplegar la aplicación con el siguiente comando:
 
 ```bash
+# Testear la aplicación en local, en la carpeta ./api y ./jobs
+dev_appserver.py app.yaml
+
 # Desplegar, en la carpeta ./api y ./jobs
 gcloud app deploy
 
