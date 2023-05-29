@@ -24,7 +24,8 @@ credentials = service_account.Credentials.from_service_account_file(
 )
 
 # Create a client instance with the specified service account key
-client = storage.Client.from_service_account_json(config.G10_SERVICE_ACCOUNT_KEY_PATH)
+client = storage.Client.from_service_account_json(
+    config.G10_SERVICE_ACCOUNT_KEY_PATH)
 
 bucket_name = config.G10_CLOUD_BUCKET
 bucket = client.get_bucket(bucket_name)
@@ -56,8 +57,8 @@ class VistaCreateTasks(Resource):
     @jwt_required()
     def post(self):
         current_user = get_jwt_identity()
-        UPLOAD_FOLDER = './uploads'
-        PROCESS_FOLDER = './processed'
+        UPLOAD_FOLDER = '/tmp/uploads' if config.USING_APP_ENGINE else './uploads'
+        PROCESS_FOLDER = '/tmp/processed' if config.USING_APP_ENGINE else './processed'
         destination_format = request.form.get("to_format")
         print(f'to format -> {destination_format}')
 
@@ -79,7 +80,8 @@ class VistaCreateTasks(Resource):
 
         while attempt_counter < max_attempts and not os.path.exists(file_path):
             attempt_counter += 1
-            print(f"Attempt {attempt_counter}: File not found. Waiting 0.5 seconds...")
+            print(
+                f"Attempt {attempt_counter}: File not found. Waiting 0.5 seconds...")
             time.sleep(0.5)
 
         if attempt_counter >= max_attempts:
@@ -104,7 +106,8 @@ class VistaCreateTasks(Resource):
 
         while not blob.exists() and attempt_counter <= max_attempts:
             attempt_counter += 1
-            print(f"File not found on blob: {blob_name}. Waiting 0.5 seconds...")
+            print(
+                f"File not found on blob: {blob_name}. Waiting 0.5 seconds...")
             time.sleep(0.5)
 
         new_file = File(
@@ -118,7 +121,8 @@ class VistaCreateTasks(Resource):
         db.session.add(new_file)
         db.session.commit()
 
-        response_string = {'mensaje': 'tarea creada exitosamente', 'file': file_schema.dump(new_file)}
+        response_string = {
+            'mensaje': 'tarea creada exitosamente', 'file': file_schema.dump(new_file)}
 
         # Call the message broker for queuing the file
         message = {
@@ -128,14 +132,16 @@ class VistaCreateTasks(Resource):
         }
         message_data = json.dumps(message).encode('utf-8')
 
-        message_id = self.publish_message(message_data, new_file.id, new_file_name, destination_format)
+        message_id = self.publish_message(
+            message_data, new_file.id, new_file_name, destination_format)
         print(f'Published message with ID: {message_id}')
 
         attempt_counter = 0
         max_attempts = 40
         while attempt_counter < max_attempts and not os.path.exists(file_path):
             attempt_counter += 1
-            print(f"Attempt {attempt_counter}: File not found. Waiting 0.5 seconds...")
+            print(
+                f"Attempt {attempt_counter}: File not found. Waiting 0.5 seconds...")
             time.sleep(0.5)
 
         os.remove(file_path)
@@ -143,7 +149,8 @@ class VistaCreateTasks(Resource):
         return response_string, 200
 
     def publish_message(self, payload, file_id, filename, new_format) -> Future:
-        topic_path = publisher.topic_path(config.GOOGLE_PUBSUB_PROJECT_ID, config.GOOGLE_PUBSUB_TOPIC_NAME)
+        topic_path = publisher.topic_path(
+            config.GOOGLE_PUBSUB_PROJECT_ID, config.GOOGLE_PUBSUB_TOPIC_NAME)
 
         message = pubsub_v1.types.PubsubMessage(
             data=payload,
@@ -154,7 +161,8 @@ class VistaCreateTasks(Resource):
             }
         )
 
-        future = publisher.publish(topic_path, data=message.data, **message.attributes)
+        future = publisher.publish(
+            topic_path, data=message.data, **message.attributes)
 
         print(f"Published message: {future.result()}")
         return future.result()

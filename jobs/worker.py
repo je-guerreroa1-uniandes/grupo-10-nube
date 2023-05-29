@@ -14,6 +14,8 @@ from datetime import datetime
 from file_converter import FileConverter
 from modelos import File
 
+import config
+
 # Configure SQLAlchemy to use the PostgreSQL database
 engine = create_engine(config.POSTGRES_URI)
 Session = sessionmaker(bind=engine)
@@ -23,7 +25,8 @@ session = Session()
 service_account_key_path = './google-json/uniandes-grupo-10-9a07a80edaf8.json'
 
 # Load the credentials from the JSON key file
-credentials = service_account.Credentials.from_service_account_file(service_account_key_path)
+credentials = service_account.Credentials.from_service_account_file(
+    service_account_key_path)
 
 # Set the credentials on the Pub/Sub subscriber client
 subscriber = pubsub_v1.SubscriberClient(credentials=credentials)
@@ -75,16 +78,25 @@ def callback(message):
 
 
 def process_file(file_id, filename, new_format):
-    UPLOAD_FOLDER = './uploads'
-    PROCESS_FOLDER = './processed'
+    UPLOAD_FOLDER = '/tmp/uploads' if config.USING_APP_ENGINE else './uploads'
+    PROCESS_FOLDER = '/tmp/processed' if config.USING_APP_ENGINE else './processed'
     filename_parts = filename.split('.')
 
     file = session.query(File).filter_by(id=file_id).first()
-    log_file_path = os.path.join(os.path.dirname(
-        os.path.abspath(__file__)), 'log_conversion.txt')
+    if file is None:
+        return
+
+    # https://cloud.google.com/appengine/docs/standard/using-temp-files?tab=python
+    dirlog = '/tmp' if config.USING_APP_ENGINE else os.path.dirname(
+        os.path.abspath(__file__))
+    log_file_path = os.path.join(dirlog, 'log_conversion.txt')
     with open(log_file_path, 'a+') as log_file:
-        log_file.write(
-            '{} to {} - solicitud de conversion: {}\n'.format(filename, new_format, file.created_at))
+        try:
+            log_file.write(
+                '{} to {} - solicitud de conversion: {}\n'.format(filename, new_format, file.created_at))
+        except AttributeError:
+            log_file.write(
+                '{} to {} - solicitud de conversion: {}\n'.format(filename, new_format, datetime.utcnow()))
     if file.state == 'PROCESSED':
         return
 
@@ -132,7 +144,8 @@ def process_file(file_id, filename, new_format):
 
         while not os.path.exists(processed_filename) or attempt_counter <= 10:
             attempt_counter += 1
-            print(f"File not found: {processed_filename}. Waiting 0.5 seconds...")
+            print(
+                f"File not found: {processed_filename}. Waiting 0.5 seconds...")
             time.sleep(0.5)
 
         print(f"Temp file path: {temp_file_path}")
@@ -158,6 +171,7 @@ def process_file(file_id, filename, new_format):
         session.commit()
     else:
         print("Invalid format")
+
 
 if __name__ == "__main__":
     future = subscriber.subscribe(subscription_path, callback)

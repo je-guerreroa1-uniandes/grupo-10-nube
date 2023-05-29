@@ -41,8 +41,6 @@ handlers:
     secure: always
     redirect_http_response_code: 301
     script: auto
-    http_headers:
-      Access-Control-Allow-Origin: "*"
 
 entrypoint: gunicorn -b :$PORT -w 4 wsgi:app
 ```
@@ -79,7 +77,7 @@ Si se preparo el entorno y se cuenta con la utilidad de gcloud instalada, se pue
 
 ```bash
 # Testear la aplicación en local, en la carpeta ./api y ./jobs
-dev_appserver.py app.yaml
+dev_appserver.py app.yaml # Este comando no funciona muy bien, se recomienda usar el siguiente
 
 # Desplegar, en la carpeta ./api y ./jobs
 gcloud app deploy

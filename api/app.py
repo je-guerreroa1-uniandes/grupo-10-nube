@@ -28,7 +28,6 @@ db.create_all()
 api = Api(app)
 
 api.add_resource(VistaHealthCheck, '/')
-api.add_resource(VistaHealthCheck, '/api')
 
 # User management
 api.add_resource(VistaSignIn, '/api/auth/signup')
