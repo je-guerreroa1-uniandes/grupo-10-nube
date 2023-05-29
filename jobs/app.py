@@ -29,7 +29,8 @@ db.create_all()
 service_account_key_path = './google-json/uniandes-grupo-10-9a07a80edaf8.json'
 
 # Load the credentials from the JSON key file
-credentials = service_account.Credentials.from_service_account_file(service_account_key_path)
+credentials = service_account.Credentials.from_service_account_file(
+    service_account_key_path)
 
 # Set the credentials on the Pub/Sub subscriber client
 subscriber = pubsub_v1.SubscriberClient(credentials=credentials)
@@ -61,12 +62,14 @@ def callback(message):
 
 
 def process_file(file_id, filename, new_format, fecha):
-    UPLOAD_FOLDER = './uploads'
-    PROCESS_FOLDER = './processed'
+    UPLOAD_FOLDER = '/tmp/uploads' if config.USING_APP_ENGINE else './uploads'
+    PROCESS_FOLDER = '/tmp/processed' if config.USING_APP_ENGINE else './processed'
     filenameParts = filename.split('.')
 
-    log_file_path = os.path.join(os.path.dirname(
-        os.path.abspath(__file__)), 'log_conversion.txt')
+    # https://cloud.google.com/appengine/docs/standard/using-temp-files?tab=python
+    dirlog = '/tmp' if config.USING_APP_ENGINE else os.path.dirname(
+        os.path.abspath(__file__))
+    log_file_path = os.path.join(dirlog, 'log_conversion.txt')
     with open(log_file_path, 'a+') as file:
         file.write(
             '{} to {} - solicitud de conversion: {}\n'.format(filename, new_format, fecha))
@@ -107,9 +110,11 @@ def process_file(file_id, filename, new_format, fecha):
     else:
         print("invalid format")
 
+
 @app.route("/")
 def hello():
     return "<h1 style='color:blue'>¡Hola JOBS!</h1>"
+
 
 if __name__ == "__main__":
     app.run(host='127.0.0.1', port=config.PORT, debug=True)

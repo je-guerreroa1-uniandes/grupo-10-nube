@@ -67,12 +67,14 @@ def callback(message):
 
 @celery_app.task(name='process_file')
 def process_file_task(file_id, filename, new_format, fecha):
-    UPLOAD_FOLDER = './uploads'
-    PROCESS_FOLDER = './processed'
+    UPLOAD_FOLDER = '/tmp/uploads' if config.USING_APP_ENGINE else './uploads'
+    PROCESS_FOLDER = '/tmp/processed' if config.USING_APP_ENGINE else './processed'
     filenameParts = filename.split('.')
 
-    log_file_path = os.path.join(os.path.dirname(
-        os.path.abspath(__file__)), 'log_conversion.txt')
+    # https://cloud.google.com/appengine/docs/standard/using-temp-files?tab=python
+    dirlog = '/tmp' if config.USING_APP_ENGINE else os.path.dirname(
+        os.path.abspath(__file__))
+    log_file_path = os.path.join(dirlog, 'log_conversion.txt')
     with open(log_file_path, 'a+') as file:
         file.write(
             '{} to {} - solicitud de conversion: {}\n'.format(filename, new_format, fecha))
