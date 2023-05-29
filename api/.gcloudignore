@@ -17,3 +17,11 @@
 __pycache__/
 # Ignored by the build system
 /setup.cfg
+
+# Environments
+.venv/
+venv/
+venv.bak/
+env/
+env.bak/
+ENV/

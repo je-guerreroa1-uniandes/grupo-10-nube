@@ -24,4 +24,4 @@ handlers:
   redirect_http_response_code: 301
   script: auto
 
-entrypoint: python3 worker.py
+entrypoint: python -m worker

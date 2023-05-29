@@ -26,5 +26,4 @@ handlers:
   redirect_http_response_code: 301
   script: auto
 
-#entrypoint: gunicorn -b :$PORT -w 4 wsgi:app
-entrypoint: flask run
+entrypoint: gunicorn -b :$PORT -w 4 wsgi:app

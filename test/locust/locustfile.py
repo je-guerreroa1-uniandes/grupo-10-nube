@@ -5,7 +5,7 @@ import config
 
 
 def health_check(l):
-    l.client.get("/api")
+    l.client.get("/")
 
 
 def login(l):
