@@ -1,0 +1,7 @@
+env_variables:
+  G10_DB_PREFIX: "postgresql"
+  G10_DB_USERNAME: "converter_db"
+  G10_DB_PASSWORD: "ckhAMLIteFlYheRptAteapeze"
+  G10_DB_HOST: "34.71.6.228"
+  G10_DB_PORT: "5432"
+  G10_DB_DBNAME: "conversion"
