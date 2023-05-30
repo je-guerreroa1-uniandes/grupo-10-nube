@@ -10,13 +10,10 @@ basic_scaling:
   max_instances: 5
   idle_timeout: 10m
 
-env_variables: # Este bloque se usa para definir variables de entorno.
-  G10_DB_PREFIX: "postgresql"
-  G10_DB_USERNAME: "converter_db"
-  G10_DB_PASSWORD: "ckhAMLIteFlYheRptAteapeze"
-  G10_DB_HOST: "34.71.6.228"
-  G10_DB_PORT: "5432"
-  G10_DB_DBNAME: "conversion"
+# Con este include podemos declarar variables de entorno en un archivo aparte
+# y dejarlo por fuera del repositorio con el .gitignore
+includes:
+  - env_variables.yaml
 
 handlers:
 - url: /.*
