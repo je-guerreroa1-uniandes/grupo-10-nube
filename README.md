@@ -18,3 +18,9 @@ bash start.sh
 A lo largo del proyecto se usará la nube de Google Cloud Platform para el desarrollo de la aplicación. Esta va a cambiar su modelo de despliegue pero existen pasos fundamentales que se deben seguir para poder configurar la cuenta donde va a estar ejecutandose. Por favor leer la primer sección y aplicar los pasos con criterio propio según las necesidades del despliegue.
 
 [¿Cómo contribuir al proyecto?](./CONTRIBUTING.md)
+
+## Memorias de los despliegues
+
+- [Despliegue 1](./docs/1-configuracion-ambiente-productivo-aws.md)
+- [Despliegue 2](./docs/2-configuracion-infraestuctura-segunda-entrega.md)
+- [Despliegue 5](./docs/5-configuracion-del-despliegue-en-app-engine.md)
