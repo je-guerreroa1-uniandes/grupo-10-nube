@@ -69,13 +69,11 @@ handlers:
 # ========================= ENTRYPOINTS PARA API =========================
 
 entrypoint: gunicorn -b :$PORT -w 4 wsgi:app
-
 # entrypoint: flask run --port=$PORT # Usar este entrypoint para ver mas informacion de los errores
 
 # ========================= ENTRYPOINTS PARA JOBS =========================
 
 # entrypoint: python -m worker # El entrypoint del Jobs
-
 ```
 
 ## Ajustar las aplicaciones para que corran un webserver sobre el puerto $PORT (default 5000)
@@ -135,3 +133,18 @@ Todo junto:
 ```bash
 echo Y | gcloud app deploy --verbosity=debug && gcloud app browse -s default && gcloud app logs tail -s default
 ```
+
+## Evidencia de la ejecución del laboratorio
+
+### dashboard
+![dashboard](./images/evidencia-despliegue-paas/dashboard.png)
+### services
+![services](./images/evidencia-despliegue-paas/services.png)
+### versions
+![versions](./images/evidencia-despliegue-paas/versions.png)
+### instances
+![instances](./images/evidencia-despliegue-paas/instances.png)
+
+## Video sustentación
+
+[Sustentación despliegue en PaaS (App engine standar) ](https://youtu.be/RbnykHCW3dk)
