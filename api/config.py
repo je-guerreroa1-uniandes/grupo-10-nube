@@ -2,6 +2,7 @@ import os
 
 # Flask
 PORT: int = int(os.getenv('PORT', default='5000'))
+USING_APP_ENGINE: bool = os.getenv('GAE_ENV', default=None) is not None
 
 # Database (PostgreSQL)
 G10_DB_PREFIX: str = os.getenv('G10_DB_PREFIX', default='postgresql')

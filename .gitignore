@@ -182,3 +182,5 @@ servers/secure/service-account-key.json
 docker/api.env
 docker/jobs.env
 docker/custom-locust.env
+
+env_variables.yaml
